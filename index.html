@@ -11,166 +11,204 @@
     --muted:#6b7280;
     --bg:#faf7f3;
     --card:#ffffff;
+    --sticky-top-height:140px;
+    --sticky-footer-height:120px;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
-  header{
-    background:linear-gradient(90deg,var(--orange),var(--orange-dark));
-    color:white;padding:18px 12px;position:relative;
-    box-shadow:0 6px 20px rgba(0,0,0,0.08)
-  }
-  .logo-left, .logo-right{position:absolute;top:12px;width:56px;height:56px}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#222;padding-bottom:var(--sticky-footer-height)}
+  header{background:linear-gradient(90deg,var(--orange),var(--orange-dark));color:white;padding:14px 12px;position:sticky;top:0;z-index:60;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+  .logo-left,.logo-right{position:absolute;top:10px;width:46px;height:46px}
   .logo-left{left:12px}
   .logo-right{right:12px}
-  .container{max-width:1100px;margin:12px auto;padding:0 12px}
-  .title{font-size:1.5rem;font-weight:800;margin:0;text-align:center}
+  .container{max-width:1200px;margin:0 auto;padding:0 12px}
+  .title{font-size:1.35rem;font-weight:800;margin:0;text-align:center}
   .sub{margin:6px 0 0;font-size:0.95rem;text-align:center}
-  .top-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:10px}
-  .date-wrap{display:flex;gap:8px;align-items:center}
-  .date-input,.stock-input{background:var(--card);border:0;padding:8px 10px;border-radius:8px;font-weight:700}
-  .price-panel{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:12px 0}
-  .price-item{background:var(--card);padding:8px 10px;border-radius:8px;box-shadow:0 6px 18px rgba(2,6,23,0.04);display:flex;flex-direction:column;align-items:center;min-width:100px}
+  .top-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .date-input{background:var(--card);border:0;padding:8px 10px;border-radius:8px;font-weight:700}
+  .price-panel{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:10px 0}
+  .price-item{background:var(--card);padding:8px 10px;border-radius:8px;box-shadow:0 6px 18px rgba(2,6,23,0.04);display:flex;flex-direction:column;align-items:center;min-width:96px}
   .price-item label{font-size:12px;color:var(--muted);margin-bottom:6px}
   .price-item input{width:86px;padding:6px;border-radius:6px;border:1px solid #e6e6e6;text-align:center}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
   .btn{background:var(--orange);color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
   .btn.ghost{background:white;color:var(--orange);border:1px solid rgba(0,0,0,0.06)}
-  .table-wrap{overflow:auto;border-radius:10px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+  .table-wrap{overflow:auto;border-radius:10px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.06);margin-top:12px}
   table{width:100%;border-collapse:collapse;min-width:1100px}
   th,td{padding:8px 6px;border-bottom:1px solid #f3f3f3;text-align:center;font-size:13px}
-  thead th{background:linear-gradient(180deg,var(--orange),var(--orange-dark));color:white;position:sticky;top:0;z-index:5}
-  .summary-litres-row td{background:#fff6ed;color:#000;font-weight:700}
-  input[type="text"],input[type="number"],input[type="tel"],input[type="date"]{width:100%;padding:6px;border-radius:6px;border:1px solid #eaeaea;text-align:center;font-size:13px;background:transparent}
-  input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  thead th{background:linear-gradient(180deg,var(--orange),var(--orange-dark));color:white;position:sticky;top:var(--sticky-top-height);z-index:40}
+  .planned-row td{background:#fff7f0;color:#4b2f0a;font-weight:800;position:sticky;top:90px;z-index:45}
+  .planned-row input{width:100%;padding:6px;border-radius:6px;border:1px solid #e6e6e6;text-align:center}
   .total-cell,.due-cell{font-weight:800}
   .send-btn{background:#25D366;border:0;color:white;padding:6px 8px;border-radius:8px;cursor:pointer}
   .delete-btn{background:#ef4444;border:0;color:white;padding:6px 8px;border-radius:8px;cursor:pointer}
-  .custom-toggle{transform:scale(1.1);margin-right:6px}
-  .footer{margin-top:10px;text-align:center;color:var(--muted);font-size:13px}
-  .toast{position:fixed;right:16px;bottom:16px;background:#111;color:#fff;padding:10px 12px;border-radius:8px;opacity:0;transform:translateY(8px);transition:all .18s}
+  .custom-toggle{transform:scale(1.05);margin-right:6px}
+  /* sticky footer summary (darker orange) */
+  .sticky-footer{
+    position:fixed;left:0;right:0;bottom:0;height:var(--sticky-footer-height);background:linear-gradient(180deg,var(--orange-dark),#b0470a);color:white;padding:10px 12px;z-index:70;box-shadow:0 -6px 20px rgba(0,0,0,0.12);
+  }
+  .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:160px repeat(8,1fr);gap:8px;align-items:center;height:100%}
+  .footer-label{font-weight:800}
+  .footer-cell{text-align:center}
+  .footer-cell small{display:block;font-size:11px;color:rgba(255,255,255,0.9)}
+  input.footer-num{width:100%;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:white;text-align:center;font-weight:700}
+  input.footer-num[readonly]{opacity:0.95}
+  .toast{position:fixed;right:16px;bottom:140px;background:#111;color:#fff;padding:10px 12px;border-radius:8px;opacity:0;transform:translateY(8px);transition:all .18s;z-index:80}
   .toast.show{opacity:1;transform:none}
-  @media (max-width:1100px){table{min-width:1000px}}
+  @media (max-width:1200px){ table{min-width:1000px} .footer-grid{grid-template-columns:140px repeat(8,1fr)} }
+  @media (max-width:820px){ .price-item{min-width:84px} .footer-grid{grid-template-columns:120px repeat(8,1fr)} }
   @media (max-width:640px){
-    .price-item{min-width:88px}
+    .title{font-size:1.15rem}
+    .logo-left,.logo-right{width:36px;height:36px}
     thead th, td {font-size:12px;padding:6px}
-    .title{font-size:1.25rem}
-    .logo-left,.logo-right{width:42px;height:42px}
+    .footer-grid{grid-template-columns:90px repeat(8,1fr)}
   }
 </style>
 </head>
 <body>
   <header>
-    <!-- logos (SVG placeholders) -->
     <div class="logo-left" aria-hidden="true">
       <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="48" fill="#fff" stroke="#f97316" stroke-width="4"/>
-        <text x="50" y="57" font-family="sans-serif" font-weight="800" font-size="26" fill="#f97316" text-anchor="middle">HAP</text>
+        <text x="50" y="57" font-family="sans-serif" font-weight="800" font-size="22" fill="#f97316" text-anchor="middle">HAP</text>
       </svg>
     </div>
     <div class="logo-right" aria-hidden="true">
       <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="48" fill="#fff" stroke="#f97316" stroke-width="4"/>
-        <text x="50" y="57" font-family="sans-serif" font-weight="800" font-size="26" fill="#f97316" text-anchor="middle">HAP</text>
+        <text x="50" y="57" font-family="sans-serif" font-weight="800" font-size="22" fill="#f97316" text-anchor="middle">HAP</text>
       </svg>
     </div>
 
     <div class="container">
       <div class="title">SAMBASHIVA MILK AGENCY</div>
       <div class="sub">Prop: <strong>K. AJAY KUMAR REDDY</strong> &nbsp; | &nbsp; Mobile: <strong>7330892694</strong></div>
-      <div class="top-row" style="margin-top:12px">
+      <div class="top-row" style="margin-top:8px">
         <div class="date-wrap small-txt">Date:
           <input id="dateInput" class="date-input" type="date" aria-label="Date"/>
         </div>
-        <div class="date-wrap small-txt">Total Litres Available Today:
-          <input id="totalAvailable" class="stock-input" type="number" min="0" inputmode="numeric" placeholder="e.g., 500"/>
+        <div class="date-wrap small-txt">Total Litres Planned (sum):
+          <input id="totalPlannedTop" class="date-input" type="text" readonly />
         </div>
-        <div class="small-txt" style="font-weight:700" id="topSoldDisplay">Total Litres Sold: 0</div>
-        <div class="small-txt" style="font-weight:700" id="topRemainingDisplay">Remaining: 0</div>
       </div>
     </div>
   </header>
 
-  <div class="container">
-    <!-- Price panel -->
-    <div class="price-panel" aria-label="Prices">
-      <div class="price-item"><label>TM (₹)</label><input id="price_TM" type="number" min="0" value="57"></div>
-      <div class="price-item"><label>SM (₹)</label><input id="price_SM" type="number" min="0" value="67"></div>
-      <div class="price-item"><label>SMALL M (₹)</label><input id="price_SMM" type="number" min="0" value="45"></div>
-      <div class="price-item"><label>SMALL C (₹)</label><input id="price_SMC" type="number" min="0" value="45"></div>
-      <div class="price-item"><label>A400 (₹)</label><input id="price_A400" type="number" min="0" value="70"></div>
-      <div class="price-item"><label>H500 (₹)</label><input id="price_H500" type="number" min="0" value="86"></div>
-      <div class="price-item"><label>FC400 (₹)</label><input id="price_FC400" type="number" min="0" value="77"></div>
-      <div class="price-item"><label>FC1L (₹)</label><input id="price_FC1L" type="number" min="0" value="76"></div>
+  <!-- main content -->
+  <main style="padding:14px 12px 80px">
+    <div class="container">
+
+      <!-- price panel -->
+      <div class="price-panel" aria-label="Prices">
+        <div class="price-item"><label>TM (₹)</label><input id="price_TM" type="number" min="0" value="57"></div>
+        <div class="price-item"><label>SM (₹)</label><input id="price_SM" type="number" min="0" value="67"></div>
+        <div class="price-item"><label>SMALL M (₹)</label><input id="price_SMM" type="number" min="0" value="45"></div>
+        <div class="price-item"><label>SMALL C (₹)</label><input id="price_SMC" type="number" min="0" value="45"></div>
+        <div class="price-item"><label>A400 (₹)</label><input id="price_A400" type="number" min="0" value="70"></div>
+        <div class="price-item"><label>H500 (₹)</label><input id="price_H500" type="number" min="0" value="86"></div>
+        <div class="price-item"><label>FC400 (₹)</label><input id="price_FC400" type="number" min="0" value="77"></div>
+        <div class="price-item"><label>FC1L (₹)</label><input id="price_FC1L" type="number" min="0" value="76"></div>
+      </div>
+
+      <div class="controls">
+        <button id="addBtn" class="btn">+ Add Shop</button>
+        <button id="saveBtn" class="btn ghost">Save Data</button>
+        <button id="exportBtn" class="btn ghost">Download CSV</button>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="Shops table">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>Full name</th><th>Mobile</th><th>TM</th><th>SM</th><th>SMALL M</th><th>SMALL C</th>
+              <th>A400</th><th>H500</th><th>FC400</th><th>FC1L</th><th>Total</th><th>Paid</th><th>Due</th><th>Send</th><th>Custom Price</th><th>Delete</th>
+            </tr>
+          </thead>
+
+          <!-- PLANNED row (top sticky under header) -->
+          <tbody>
+            <tr class="planned-row">
+              <td style="text-align:left;padding-left:8px">Planned litres to sell (editable)</td>
+              <td>—</td>
+              <td><input id="plan_TM" type="number" min="0" value="0"></td>
+              <td><input id="plan_SM" type="number" min="0" value="0"></td>
+              <td><input id="plan_SMM" type="number" min="0" value="0"></td>
+              <td><input id="plan_SMC" type="number" min="0" value="0"></td>
+              <td><input id="plan_A400" type="number" min="0" value="0"></td>
+              <td><input id="plan_H500" type="number" min="0" value="0"></td>
+              <td><input id="plan_FC400" type="number" min="0" value="0"></td>
+              <td><input id="plan_FC1L" type="number" min="0" value="0"></td>
+              <td id="plan_total">0</td>
+              <td colspan="5"></td>
+            </tr>
+          </tbody>
+
+          <!-- data rows -->
+          <tbody id="dataBody"></tbody>
+
+          <tfoot>
+            <tr class="summary-row">
+              <td style="text-align:left;padding-left:8px">Totals per column</td>
+              <td>—</td>
+              <td id="tot_tm">0</td>
+              <td id="tot_sm">0</td>
+              <td id="tot_smm">0</td>
+              <td id="tot_smc">0</td>
+              <td id="tot_a400">0</td>
+              <td id="tot_h500">0</td>
+              <td id="tot_fc400">0</td>
+              <td id="tot_fc1l">0</td>
+              <td id="tot_total">0</td>
+              <td id="tot_paid">0</td>
+              <td id="tot_due">0</td>
+              <td colspan="3"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div style="margin-top:12px;text-align:center;font-weight:700">
+        Grand Total: ₹<span id="grandTotal">0</span><br>
+        Total Litres Sold: <span id="grandLitres">0</span> Ltrs
+      </div>
+
+      <div style="margin-top:8px;text-align:center;color:var(--muted);font-size:13px">
+        Saved locally on this device — data persists after refresh/close.
+      </div>
     </div>
+  </main>
 
-    <div class="controls">
-      <button id="addBtn" class="btn">+ Add Shop</button>
-      <button id="saveBtn" class="btn ghost">Save Data</button>
-      <button id="exportBtn" class="btn ghost">Download CSV</button>
-    </div>
+  <!-- sticky darker footer showing actuals vs planned & remaining -->
+  <div class="sticky-footer" role="region" aria-label="Actual litres summary">
+    <div class="footer-grid">
+      <div class="footer-label">Actual / Planned</div>
+      <div class="footer-cell"><small>TM</small><input id="f_sold_TM" class="footer-num" readonly></div>
+      <div class="footer-cell"><small>SM</small><input id="f_sold_SM" class="footer-num" readonly></div>
+      <div class="footer-cell"><small>SMALL M</small><input id="f_sold_SMM" class="footer-num" readonly></div>
+      <div class="footer-cell"><small>SMALL C</small><input id="f_sold_SMC" class="footer-num" readonly></div>
+      <div class="footer-cell"><small>A400</small><input id="f_sold_A400" class="footer-num" readonly></div>
+      <div class="footer-cell"><small>H500</small><input id="f_sold_H500" class="footer-num" readonly></div>
+      <div class="footer-cell"><small>FC400</small><input id="f_sold_FC400" class="footer-num" readonly></div>
+      <div class="footer-cell"><small>FC1L</small><input id="f_sold_FC1L" class="footer-num" readonly></div>
 
-    <div class="table-wrap" role="region" aria-label="Shops table">
-      <table id="dataTable">
-        <thead>
-          <tr>
-            <th>Full name</th><th>Mobile</th><th>TM</th><th>SM</th><th>SMALL M</th><th>SMALL C</th>
-            <th>A400</th><th>H500</th><th>FC400</th><th>FC1L</th><th>Total</th><th>Paid</th><th>Due</th><th>Send</th><th>Custom Price</th><th>Delete</th>
-          </tr>
-        </thead>
+      <div class="footer-label">Planned</div>
+      <div class="footer-cell"><input id="f_plan_TM" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_plan_SM" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_plan_SMM" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_plan_SMC" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_plan_A400" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_plan_H500" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_plan_FC400" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_plan_FC1L" class="footer-num" readonly></div>
 
-        <!-- summary row right under header -->
-        <tbody id="summaryBody">
-          <tr class="summary-litres-row">
-            <td style="text-align:left;padding-left:8px">Total litres sold (per type)</td>
-            <td>—</td>
-            <td id="sum_tm">0</td>
-            <td id="sum_sm">0</td>
-            <td id="sum_smm">0</td>
-            <td id="sum_smc">0</td>
-            <td id="sum_a400">0</td>
-            <td id="sum_h500">0</td>
-            <td id="sum_fc400">0</td>
-            <td id="sum_fc1l">0</td>
-            <td id="sum_total">0</td>
-            <td id="sum_paid">0</td>
-            <td id="sum_due">0</td>
-            <td colspan="3"></td>
-          </tr>
-        </tbody>
-
-        <!-- actual data rows -->
-        <tbody id="dataBody"></tbody>
-
-        <tfoot>
-          <tr class="summary-row">
-            <td style="text-align:left;padding-left:8px">Totals per column</td>
-            <td id="tot_mobile" class="small-txt">—</td>
-            <td id="tot_tm">0</td>
-            <td id="tot_sm">0</td>
-            <td id="tot_smm">0</td>
-            <td id="tot_smc">0</td>
-            <td id="tot_a400">0</td>
-            <td id="tot_h500">0</td>
-            <td id="tot_fc400">0</td>
-            <td id="tot_fc1l">0</td>
-            <td id="tot_total">0</td>
-            <td id="tot_paid">0</td>
-            <td id="tot_due">0</td>
-            <td colspan="3"></td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-
-    <div style="margin-top:12px;text-align:center;font-weight:700">
-      Grand Total: ₹<span id="grandTotal">0</span><br>
-      Total Litres Sold: <span id="grandLitres">0</span> Ltrs &nbsp; | &nbsp;
-      Total Available: <span id="displayAvailable">0</span> Ltrs &nbsp; | &nbsp;
-      Remaining Litres: <span id="remainingLitres">0</span> Ltrs
-    </div>
-
-    <div class="footer" style="margin-top:10px;text-align:center;color:var(--muted);font-size:13px">
-      Saved locally on this device — data persists after refresh/close.
+      <div class="footer-label">Remaining</div>
+      <div class="footer-cell"><input id="f_remain_TM" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_remain_SM" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_remain_SMM" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_remain_SMC" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_remain_A400" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_remain_H500" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_remain_FC400" class="footer-num" readonly></div>
+      <div class="footer-cell"><input id="f_remain_FC1L" class="footer-num" readonly></div>
     </div>
   </div>
 
@@ -178,10 +216,9 @@
 
 <script>
 (() => {
-  // storage key
   const STORAGE_KEY = 'sambashivaMilkApp_v1';
 
-  // elements
+  // price inputs
   const priceInputs = {
     TM: document.getElementById('price_TM'),
     SM: document.getElementById('price_SM'),
@@ -192,30 +229,64 @@
     FC400: document.getElementById('price_FC400'),
     FC1L: document.getElementById('price_FC1L')
   };
+
+  // planned inputs (top)
+  const plan = {
+    TM: document.getElementById('plan_TM'),
+    SM: document.getElementById('plan_SM'),
+    'SMALL M': document.getElementById('plan_SMM'),
+    'SMALL C': document.getElementById('plan_SMC'),
+    A400: document.getElementById('plan_A400'),
+    H500: document.getElementById('plan_H500'),
+    FC400: document.getElementById('plan_FC400'),
+    FC1L: document.getElementById('plan_FC1L')
+  };
+
+  // footer display elements
+  const f_sold = {
+    TM: document.getElementById('f_sold_TM'),
+    SM: document.getElementById('f_sold_SM'),
+    'SMALL M': document.getElementById('f_sold_SMM'),
+    'SMALL C': document.getElementById('f_sold_SMC'),
+    A400: document.getElementById('f_sold_A400'),
+    H500: document.getElementById('f_sold_H500'),
+    FC400: document.getElementById('f_sold_FC400'),
+    FC1L: document.getElementById('f_sold_FC1L')
+  };
+  const f_plan = {
+    TM: document.getElementById('f_plan_TM'),
+    SM: document.getElementById('f_plan_SM'),
+    'SMALL M': document.getElementById('f_plan_SMM'),
+    'SMALL C': document.getElementById('f_plan_SMC'),
+    A400: document.getElementById('f_plan_A400'),
+    H500: document.getElementById('f_plan_H500'),
+    FC400: document.getElementById('f_plan_FC400'),
+    FC1L: document.getElementById('f_plan_FC1L')
+  };
+  const f_remain = {
+    TM: document.getElementById('f_remain_TM'),
+    SM: document.getElementById('f_remain_SM'),
+    'SMALL M': document.getElementById('f_remain_SMM'),
+    'SMALL C': document.getElementById('f_remain_SMC'),
+    A400: document.getElementById('f_remain_A400'),
+    H500: document.getElementById('f_remain_H500'),
+    FC400: document.getElementById('f_remain_FC400'),
+    FC1L: document.getElementById('f_remain_FC1L')
+  };
+
+  // other elements
   const dataBody = document.getElementById('dataBody');
-  const summaryBody = document.getElementById('summaryBody');
   const addBtn = document.getElementById('addBtn');
   const saveBtn = document.getElementById('saveBtn');
   const exportBtn = document.getElementById('exportBtn');
   const dateInput = document.getElementById('dateInput');
-  const totalAvailableInput = document.getElementById('totalAvailable');
   const toast = document.getElementById('toast');
+  const plan_total = document.getElementById('plan_total');
+  const totalPlannedTop = document.getElementById('totalPlannedTop');
+  const grandTotalEl = document.getElementById('grandTotal');
+  const grandLitresEl = document.getElementById('grandLitres');
 
-  // summary elements
-  const sumEls = {
-    tm: document.getElementById('sum_tm'),
-    sm: document.getElementById('sum_sm'),
-    smm: document.getElementById('sum_smm'),
-    smc: document.getElementById('sum_smc'),
-    a400: document.getElementById('sum_a400'),
-    h500: document.getElementById('sum_h500'),
-    fc400: document.getElementById('sum_fc400'),
-    fc1l: document.getElementById('sum_fc1l'),
-    total: document.getElementById('sum_total'),
-    paid: document.getElementById('sum_paid'),
-    due: document.getElementById('sum_due')
-  };
-  const footEls = {
+  const totEls = {
     tm: document.getElementById('tot_tm'),
     sm: document.getElementById('tot_sm'),
     smm: document.getElementById('tot_smm'),
@@ -228,19 +299,10 @@
     paid: document.getElementById('tot_paid'),
     due: document.getElementById('tot_due')
   };
-  const grandEl = document.getElementById('grandTotal');
-  const grandLitresEl = document.getElementById('grandLitres');
-  const remainingEl = document.getElementById('remainingLitres');
-  const topSoldDisplay = document.getElementById('topSoldDisplay');
-  const topRemainingDisplay = document.getElementById('topRemainingDisplay');
-  const displayAvailable = document.getElementById('displayAvailable');
 
   function showToast(msg, ms=1400){
-    toast.textContent = msg;
-    toast.classList.add('show');
-    toast.setAttribute('aria-hidden','false');
-    clearTimeout(toast._t);
-    toast._t = setTimeout(()=>{ toast.classList.remove('show'); toast.setAttribute('aria-hidden','true'); }, ms);
+    toast.textContent = msg; toast.classList.add('show'); toast.setAttribute('aria-hidden','false');
+    clearTimeout(toast._t); toast._t = setTimeout(()=>{ toast.classList.remove('show'); toast.setAttribute('aria-hidden','true'); }, ms);
   }
 
   function readGlobalPrices(){
@@ -256,7 +318,7 @@
     };
   }
 
-  // create a table row for shop
+  // create shop row
   function createRow(data){
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -274,11 +336,10 @@
       <td><input class="paid" type="number" min="0" inputmode="numeric"/></td>
       <td class="due-cell">0</td>
       <td><button class="send-btn" type="button">Send</button></td>
-      <td><label style="cursor:pointer"><input type="checkbox" class="custom-toggle custom-toggle-check"/> Edit</label></td>
+      <td><label style="cursor:pointer"><input type="checkbox" class="custom-toggle"/> Edit</label></td>
       <td><button class="delete-btn" type="button">Delete</button></td>
     `;
 
-    // populate if data provided
     if(data){
       tr.querySelector('.shop').value = data.shop || '';
       tr.querySelector('.mobile').value = data.mobile || '';
@@ -293,38 +354,38 @@
       tr.querySelector('.paid').value = data.paid || '';
     }
 
-    // attach events to inputs
+    // input events
     tr.querySelectorAll('input').forEach(inp=>{
       inp.addEventListener('input', ()=>{
         calculateRow(tr);
+        updateAllSums();
         autosaveSilent();
       });
     });
 
-    // send button
+    // send
     tr.querySelector('.send-btn').addEventListener('click', ()=> sendWhatsAppForRow(tr));
 
-    // delete with confirm
+    // delete
     tr.querySelector('.delete-btn').addEventListener('click', ()=>{
-      if(confirm('Delete this row? This action cannot be undone.')) {
-        // if custom editor next, remove it
+      if(confirm('Delete this row? This action cannot be undone.')){
         if(tr.nextSibling && tr.nextSibling.classList && tr.nextSibling.classList.contains('custom-price-row')) tr.parentNode.removeChild(tr.nextSibling);
         tr.parentNode.removeChild(tr);
-        updateTotalsAndLitres();
+        updateAllSums();
         autosaveSilent();
       }
     });
 
     // custom price toggle
-    const toggle = tr.querySelector('.custom-toggle-check');
+    const toggle = tr.querySelector('.custom-toggle');
     toggle.addEventListener('change', (e)=>{
       if(e.target.checked) showCustomPriceEditor(tr, data && data.customPrices ? data.customPrices : null);
       else removeCustomPriceEditor(tr);
       calculateRow(tr);
+      updateAllSums();
       autosaveSilent();
     });
 
-    // if data contains customPrices, enable editor
     if(data && data.customPrices){
       toggle.checked = true;
       showCustomPriceEditor(tr, data.customPrices);
@@ -333,49 +394,40 @@
     return tr;
   }
 
-  // show inline custom price editor beneath row
   function showCustomPriceEditor(tr, customData){
     if(tr.nextSibling && tr.nextSibling.classList && tr.nextSibling.classList.contains('custom-price-row')) return;
-    const editor = document.createElement('tr');
-    editor.classList.add('custom-price-row');
-    editor.innerHTML = `<td colspan="17" style="background:#fff6ee;padding:10px">
+    const row = document.createElement('tr'); row.classList.add('custom-price-row');
+    row.innerHTML = `<td colspan="17" style="background:#fff7f0;padding:10px">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <div style="font-weight:700;margin-right:12px">Custom prices for this customer:</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <label>TM ₹<input class="cust-price-tm" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
-          <label>SM ₹<input class="cust-price-sm" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
-          <label>SMALL M ₹<input class="cust-price-smm" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
-          <label>SMALL C ₹<input class="cust-price-smc" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
-          <label>A400 ₹<input class="cust-price-a400" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
-          <label>H500 ₹<input class="cust-price-h500" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
-          <label>FC400 ₹<input class="cust-price-fc400" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
-          <label>FC1L ₹<input class="cust-price-fc1l" type="number" min="0" style="width:90px;padding:6px;margin-left:6px" /></label>
+          <label>TM ₹<input class="cust-price-tm" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
+          <label>SM ₹<input class="cust-price-sm" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
+          <label>SMALL M ₹<input class="cust-price-smm" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
+          <label>SMALL C ₹<input class="cust-price-smc" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
+          <label>A400 ₹<input class="cust-price-a400" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
+          <label>H500 ₹<input class="cust-price-h500" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
+          <label>FC400 ₹<input class="cust-price-fc400" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
+          <label>FC1L ₹<input class="cust-price-fc1l" type="number" min="0" style="width:86px;padding:6px;margin-left:6px" /></label>
         </div>
       </div>
     </td>`;
-    tr.parentNode.insertBefore(editor, tr.nextSibling);
-
-    // populate if customData
+    tr.parentNode.insertBefore(row, tr.nextSibling);
     if(customData){
-      editor.querySelector('.cust-price-tm').value = customData.TM || '';
-      editor.querySelector('.cust-price-sm').value = customData.SM || '';
-      editor.querySelector('.cust-price-smm').value = customData['SMALL M'] || '';
-      editor.querySelector('.cust-price-smc').value = customData['SMALL C'] || '';
-      editor.querySelector('.cust-price-a400').value = customData.A400 || '';
-      editor.querySelector('.cust-price-h500').value = customData.H500 || '';
-      editor.querySelector('.cust-price-fc400').value = customData.FC400 || '';
-      editor.querySelector('.cust-price-fc1l').value = customData.FC1L || '';
+      row.querySelector('.cust-price-tm').value = customData.TM || '';
+      row.querySelector('.cust-price-sm').value = customData.SM || '';
+      row.querySelector('.cust-price-smm').value = customData['SMALL M'] || '';
+      row.querySelector('.cust-price-smc').value = customData['SMALL C'] || '';
+      row.querySelector('.cust-price-a400').value = customData.A400 || '';
+      row.querySelector('.cust-price-h500').value = customData.H500 || '';
+      row.querySelector('.cust-price-fc400').value = customData.FC400 || '';
+      row.querySelector('.cust-price-fc1l').value = customData.FC1L || '';
     }
-
-    editor.querySelectorAll('input').forEach(i=>{
-      i.addEventListener('input', ()=> { calculateRow(tr); autosaveSilent(); });
-    });
+    row.querySelectorAll('input').forEach(i=> i.addEventListener('input', ()=> { calculateRow(tr); updateAllSums(); autosaveSilent(); }));
   }
 
   function removeCustomPriceEditor(tr){
-    if(tr.nextSibling && tr.nextSibling.classList && tr.nextSibling.classList.contains('custom-price-row')){
-      tr.parentNode.removeChild(tr.nextSibling);
-    }
+    if(tr.nextSibling && tr.nextSibling.classList && tr.nextSibling.classList.contains('custom-price-row')) tr.parentNode.removeChild(tr.nextSibling);
   }
 
   function getCustomPrices(tr){
@@ -395,19 +447,18 @@
     return null;
   }
 
-  // calculate one row
+  // calculate single row totals
   function calculateRow(tr){
     const global = readGlobalPrices();
     const custom = getCustomPrices(tr);
-
-    const tmQty = Number(tr.querySelector('.tm').value || 0);
-    const smQty = Number(tr.querySelector('.sm').value || 0);
-    const smmQty = Number(tr.querySelector('.smm').value || 0);
-    const smcQty = Number(tr.querySelector('.smc').value || 0);
-    const a400Qty = Number(tr.querySelector('.a400').value || 0);
-    const h500Qty = Number(tr.querySelector('.h500').value || 0);
-    const fc400Qty = Number(tr.querySelector('.fc400').value || 0);
-    const fc1lQty = Number(tr.querySelector('.fc1l').value || 0);
+    const tm = Number(tr.querySelector('.tm').value || 0);
+    const sm = Number(tr.querySelector('.sm').value || 0);
+    const smm = Number(tr.querySelector('.smm').value || 0);
+    const smc = Number(tr.querySelector('.smc').value || 0);
+    const a400 = Number(tr.querySelector('.a400').value || 0);
+    const h500 = Number(tr.querySelector('.h500').value || 0);
+    const fc400 = Number(tr.querySelector('.fc400').value || 0);
+    const fc1l = Number(tr.querySelector('.fc1l').value || 0);
     const paid = Number(tr.querySelector('.paid').value || 0);
 
     const p = {
@@ -421,21 +472,20 @@
       FC1L: (custom && custom.FC1L != null) ? custom.FC1L : global.FC1L
     };
 
-    const total = (tmQty * p.TM) + (smQty * p.SM) + (smmQty * p['SMALL M']) + (smcQty * p['SMALL C'])
-                + (a400Qty * p.A400) + (h500Qty * p.H500) + (fc400Qty * p.FC400) + (fc1lQty * p.FC1L);
+    const total = (tm * p.TM) + (sm * p.SM) + (smm * p['SMALL M']) + (smc * p['SMALL C'])
+                + (a400 * p.A400) + (h500 * p.H500) + (fc400 * p.FC400) + (fc1l * p.FC1L);
+
     const due = Math.max(0, total - paid);
 
     tr.querySelector('.total-cell').textContent = formatNum(total);
     tr.querySelector('.due-cell').textContent = formatNum(due);
-
-    updateTotalsAndLitres();
   }
 
-  // update summary row (top), footer totals, grand totals, litres, remaining
-  function updateTotalsAndLitres(){
-    let g = 0;
+  // update sold/planned/remaining and footer + footer inputs
+  function updateAllSums(){
+    // sums
     let tmSum=0, smSum=0, smmSum=0, smcSum=0, a400Sum=0, h500Sum=0, fc400Sum=0, fc1lSum=0;
-    let paidSum=0, dueSum=0, totalMoneySum=0;
+    let totalMoneySum=0, paidSum=0, dueSum=0;
 
     const rows = Array.from(dataBody.querySelectorAll('tr')).filter(tr => !(tr.classList && tr.classList.contains('custom-price-row')));
     rows.forEach(tr=>{
@@ -454,63 +504,77 @@
 
       tmSum += tm; smSum += sm; smmSum += smm; smcSum += smc; a400Sum += a400; h500Sum += h500; fc400Sum += fc400; fc1lSum += fc1l;
       totalMoneySum += total; paidSum += paid; dueSum += due;
-      g += total;
     });
 
-    // top summary row
-    sumEls.tm.textContent = formatNum(tmSum);
-    sumEls.sm.textContent = formatNum(smSum);
-    sumEls.smm.textContent = formatNum(smmSum);
-    sumEls.smc.textContent = formatNum(smcSum);
-    sumEls.a400.textContent = formatNum(a400Sum);
-    sumEls.h500.textContent = formatNum(h500Sum);
-    sumEls.fc400.textContent = formatNum(fc400Sum);
-    sumEls.fc1l.textContent = formatNum(fc1lSum);
-    sumEls.total.textContent = formatNum(totalMoneySum);
-    sumEls.paid.textContent = formatNum(paidSum);
-    sumEls.due.textContent = formatNum(dueSum);
+    // update footer sold fields
+    f_sold.TM.value = formatNum(tmSum);
+    f_sold.SM.value = formatNum(smSum);
+    f_sold['SMALL M'].value = formatNum(smmSum);
+    f_sold['SMALL C'].value = formatNum(smcSum);
+    f_sold.A400.value = formatNum(a400Sum);
+    f_sold.H500.value = formatNum(h500Sum);
+    f_sold.FC400.value = formatNum(fc400Sum);
+    f_sold.FC1L.value = formatNum(fc1lSum);
 
-    // footer totals
-    footEls.tm.textContent = formatNum(tmSum);
-    footEls.sm.textContent = formatNum(smSum);
-    footEls.smm.textContent = formatNum(smmSum);
-    footEls.smc.textContent = formatNum(smcSum);
-    footEls.a400.textContent = formatNum(a400Sum);
-    footEls.h500.textContent = formatNum(h500Sum);
-    footEls.fc400.textContent = formatNum(fc400Sum);
-    footEls.fc1l.textContent = formatNum(fc1lSum);
-    footEls.total.textContent = formatNum(totalMoneySum);
-    footEls.paid.textContent = formatNum(paidSum);
-    footEls.due.textContent = formatNum(dueSum);
+    // update plan_total and top totalPlannedTop
+    const types = ['TM','SM','SMALL M','SMALL C','A400','H500','FC400','FC1L'];
+    let plannedSum = 0;
+    types.forEach(t => { plannedSum += Number(plan[t].value || 0); });
+    plan_total.textContent = formatNum(plannedSum);
+    totalPlannedTop.value = formatNum(plannedSum);
 
-    grandEl.textContent = formatNum(g);
+    // copy planned to footer planned display
+    f_plan.TM.value = formatNum(Number(plan.TM.value || 0));
+    f_plan.SM.value = formatNum(Number(plan.SM.value || 0));
+    f_plan['SMALL M'].value = formatNum(Number(plan['SMALL M'].value || 0));
+    f_plan['SMALL C'].value = formatNum(Number(plan['SMALL C'].value || 0));
+    f_plan.A400.value = formatNum(Number(plan.A400.value || 0));
+    f_plan.H500.value = formatNum(Number(plan.H500.value || 0));
+    f_plan.FC400.value = formatNum(Number(plan.FC400.value || 0));
+    f_plan.FC1L.value = formatNum(Number(plan.FC1L.value || 0));
 
+    // remaining = planned - sold (min 0)
+    f_remain.TM.value = formatNum(Math.max(0, Number(plan.TM.value || 0) - tmSum));
+    f_remain.SM.value = formatNum(Math.max(0, Number(plan.SM.value || 0) - smSum));
+    f_remain['SMALL M'].value = formatNum(Math.max(0, Number(plan['SMALL M'].value || 0) - smmSum));
+    f_remain['SMALL C'].value = formatNum(Math.max(0, Number(plan['SMALL C'].value || 0) - smcSum));
+    f_remain.A400.value = formatNum(Math.max(0, Number(plan.A400.value || 0) - a400Sum));
+    f_remain.H500.value = formatNum(Math.max(0, Number(plan.H500.value || 0) - h500Sum));
+    f_remain.FC400.value = formatNum(Math.max(0, Number(plan.FC400.value || 0) - fc400Sum));
+    f_remain.FC1L.value = formatNum(Math.max(0, Number(plan.FC1L.value || 0) - fc1lSum));
+
+    // update footer totals
+    totEls.tm.textContent = formatNum(tmSum);
+    totEls.sm.textContent = formatNum(smSum);
+    totEls.smm.textContent = formatNum(smmSum);
+    totEls.smc.textContent = formatNum(smcSum);
+    totEls.a400.textContent = formatNum(a400Sum);
+    totEls.h500.textContent = formatNum(h500Sum);
+    totEls.fc400.textContent = formatNum(fc400Sum);
+    totEls.fc1l.textContent = formatNum(fc1lSum);
+    totEls.total.textContent = formatNum(totalMoneySum);
+    totEls.paid.textContent = formatNum(paidSum);
+    totEls.due.textContent = formatNum(dueSum);
+
+    grandTotalEl.textContent = formatNum(totalMoneySum);
     const litresSold = tmSum + smSum + smmSum + smcSum + a400Sum + h500Sum + fc400Sum + fc1lSum;
     grandLitresEl.textContent = formatNum(litresSold);
-
-    const available = Number(totalAvailableInput.value || localStorage.getItem(STORAGE_KEY + '_available') || 0);
-    displayAvailable.textContent = formatNum(available);
-    const remaining = Math.max(0, available - litresSold);
-    remainingEl.textContent = formatNum(remaining);
-
-    topSoldDisplay.textContent = `Total Litres Sold: ${formatNum(litresSold)}`;
-    topRemainingDisplay.textContent = `Remaining: ${formatNum(remaining)}`;
 
     autosaveSilent();
   }
 
   function formatNum(n){
     if(!isFinite(n)) return '0';
-    if(Math.round(n)===n) return String(Math.round(n));
+    if(Math.round(n) === n) return String(Math.round(n));
     return Number(n).toFixed(2);
   }
 
-  // collect rows for save/export
+  // collect rows for saving/export
   function collectRows(){
     const out = [];
     const rows = Array.from(dataBody.querySelectorAll('tr')).filter(tr => !(tr.classList && tr.classList.contains('custom-price-row')));
     rows.forEach(tr=>{
-      const hasCustom = tr.querySelector('.custom-toggle-check') && tr.querySelector('.custom-toggle-check').checked;
+      const hasCustom = tr.querySelector('.custom-toggle') && tr.querySelector('.custom-toggle').checked;
       const customPrices = hasCustom ? getCustomPrices(tr) : null;
       const row = {
         shop: tr.querySelector('.shop').value.trim(),
@@ -526,26 +590,32 @@
         paid: tr.querySelector('.paid').value.trim(),
         customPrices: customPrices
       };
-      // keep only meaningful rows (or those with custom prices)
       if(Object.values(row).some(v => v !== '' && v !== null) || row.customPrices) out.push(row);
     });
     return out;
   }
 
-  // save all to localStorage
+  // save everything to localStorage
   function saveData(){
     try{
       const data = {
         rows: collectRows(),
         date: dateInput.value || '',
         prices: readGlobalPrices(),
-        available: totalAvailableInput.value || ''
+        plan: {
+          TM: Number(plan.TM.value || 0),
+          SM: Number(plan.SM.value || 0),
+          'SMALL M': Number(plan['SMALL M'].value || 0),
+          'SMALL C': Number(plan['SMALL C'].value || 0),
+          A400: Number(plan.A400.value || 0),
+          H500: Number(plan.H500.value || 0),
+          FC400: Number(plan.FC400.value || 0),
+          FC1L: Number(plan.FC1L.value || 0)
+        }
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       showToast('Saved locally');
-    }catch(e){
-      console.error(e); showToast('Save failed');
-    }
+    }catch(e){ console.error(e); showToast('Save failed'); }
   }
 
   function autosaveSilent(){
@@ -554,7 +624,16 @@
         rows: collectRows(),
         date: dateInput.value || '',
         prices: readGlobalPrices(),
-        available: totalAvailableInput.value || ''
+        plan: {
+          TM: Number(plan.TM.value || 0),
+          SM: Number(plan.SM.value || 0),
+          'SMALL M': Number(plan['SMALL M'].value || 0),
+          'SMALL C': Number(plan['SMALL C'].value || 0),
+          A400: Number(plan.A400.value || 0),
+          H500: Number(plan.H500.value || 0),
+          FC400: Number(plan.FC400.value || 0),
+          FC1L: Number(plan.FC1L.value || 0)
+        }
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }catch(e){}
@@ -566,8 +645,7 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if(raw){
         const data = JSON.parse(raw);
-        if(data.prices) {
-          // set global prices if present
+        if(data.prices){
           if(typeof data.prices.TM !== 'undefined') priceInputs.TM.value = data.prices.TM;
           if(typeof data.prices.SM !== 'undefined') priceInputs.SM.value = data.prices.SM;
           if(typeof data.prices['SMALL M'] !== 'undefined') priceInputs['SMALL M'].value = data.prices['SMALL M'];
@@ -578,7 +656,9 @@
           if(typeof data.prices.FC1L !== 'undefined') priceInputs.FC1L.value = data.prices.FC1L;
         }
         if(data.date) dateInput.value = data.date; else dateInput.value = new Date().toISOString().slice(0,10);
-        if(data.available) totalAvailableInput.value = data.available;
+        if(data.plan){
+          Object.keys(plan).forEach(k => { if(typeof data.plan[k] !== 'undefined') plan[k].value = data.plan[k]; });
+        }
         dataBody.innerHTML = '';
         if(Array.isArray(data.rows) && data.rows.length){
           data.rows.forEach(r => {
@@ -586,29 +666,37 @@
             dataBody.appendChild(tr);
             calculateRow(tr);
           });
-          updateTotalsAndLitres();
+          updateAllSums();
           return;
         }
       }
     }catch(e){ console.error(e); }
-    // default if no saved data: one empty row and today's date
+    // default: empty row and current date
     dataBody.innerHTML = '';
     dataBody.appendChild(createRow());
     dateInput.value = new Date().toISOString().slice(0,10);
-    updateTotalsAndLitres();
+    updateAllSums();
   }
 
-  // CSV export (mobile-compatible)
+  // download CSV with planned top and bottom summary; filename milkYYYYMMDD.csv
   function downloadCSV(){
     const rows = collectRows();
-    if(rows.length === 0){ showToast('No data to export'); return; }
+    const lines = [];
+    // planned block
+    lines.push(`"Planned Litres","","","","","","","","",""`);
+    const types = ['TM','SM','SMALL M','SMALL C','A400','H500','FC400','FC1L'];
+    const planRow = ['Planned'];
+    types.forEach(t => planRow.push(String(Number(plan[t].value || 0))));
+    lines.push(planRow.map(c => `"${c.replace(/"/g,'""')}"`).join(','));
+    lines.push('');
+    // header for rows
     const header = ['Shop FullName','Mobile','TM','SM','SMALL M','SMALL C','A400','H500','FC400','FC1L','Total','Paid','Due','Date','CustomPrices'];
-    const lines = [header.join(',')];
-
+    lines.push(header.join(','));
     rows.forEach(r=>{
-      const tm = +(r.TM||0), sm=+(r.SM||0), smm=+(r.SMALLM||0), smc=+(r.SMALLC||0), a400=+(r.A400||0), h500=+(r.H500||0), fc400=+(r.FC400||0), fc1l=+(r.FC1L||0);
+      const tm=+(r.TM||0), sm=+(r.SM||0), smm=+(r.SMALLM||0), smc=+(r.SMALLC||0),
+            a400=+(r.A400||0), h500=+(r.H500||0), fc400=+(r.FC400||0), fc1l=+(r.FC1L||0);
       const global = readGlobalPrices();
-      let total = 0; let customDesc = '';
+      let total=0, customDesc='';
       if(r.customPrices){
         const p = r.customPrices;
         total = tm*(p.TM||global.TM) + sm*(p.SM||global.SM) + smm*((p['SMALL M'])||global['SMALL M']) + smc*((p['SMALL C'])||global['SMALL C']) + a400*((p.A400)||global.A400) + h500*((p.H500)||global.H500) + fc400*((p.FC400)||global.FC400) + fc1l*((p.FC1L)||global.FC1L);
@@ -623,32 +711,41 @@
       lines.push(safe.join(','));
     });
 
-    // summary lines
+    // bottom summary: sold, planned, remaining
     lines.push('');
     lines.push(`"Summary:","","TM","SM","SMALL M","SMALL C","A400","H500","FC400","FC1L","Total (₹)","Paid (₹)","Due (₹)","",""`);
-    const summaryVals = [ '', '', sumEls.tm.textContent, sumEls.sm.textContent, sumEls.smm.textContent, sumEls.smc.textContent, sumEls.a400.textContent, sumEls.h500.textContent, sumEls.fc400.textContent, sumEls.fc1l.textContent, footEls.total.textContent, footEls.paid.textContent, footEls.due.textContent, dateInput.value || '', '' ];
-    lines.push(summaryVals.map(c => `"${String(c).replace(/"/g,'""')}"`).join(','));
+    // compute footer totals first
+    // re-use updateAllSums ensures totEls are up to date
+    updateAllSums();
+    const footerVals = ['', '', totEls.tm.textContent, totEls.sm.textContent, totEls.smm.textContent, totEls.smc.textContent, totEls.a400.textContent, totEls.h500.textContent, totEls.fc400.textContent, totEls.fc1l.textContent, totEls.total.textContent, totEls.paid.textContent, totEls.due.textContent, dateInput.value || '', ''];
+    lines.push(footerVals.map(c => `"${String(c).replace(/"/g,'""')}"`).join(','));
     lines.push('');
-    const available = totalAvailableInput.value || localStorage.getItem(STORAGE_KEY + '_available') || '';
-    const grandLitres = grandLitresEl.textContent || '0';
-    const remaining = remainingEl.textContent || '0';
-    lines.push(`"Available litres","${available}"`);
-    lines.push(`"Total litres sold","${grandLitres}"`);
-    lines.push(`"Remaining litres","${remaining}"`);
+    // planned row again
+    const plannedAgain = ['Planned'];
+    types.forEach(t => plannedAgain.push(String(Number(plan[t].value || 0))));
+    lines.push(plannedAgain.map(c => `"${c.replace(/"/g,'""')}"`).join(','));
+    // sold row
+    const soldAgain = ['Sold'];
+    types.forEach(t => soldAgain.push(String(Number(f_sold[t].value || 0))));
+    lines.push(soldAgain.map(c => `"${c.replace(/"/g,'""')}"`).join(','));
+    // remaining row
+    const remainAgain = ['Remaining'];
+    types.forEach(t => remainAgain.push(String(Number(f_remain[t].value || 0))));
+    lines.push(remainAgain.map(c => `"${c.replace(/"/g,'""')}"`).join(','));
 
     const csv = lines.join('\n');
     const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    const fname = `MilkSales_${(dateInput.value || new Date().toISOString().slice(0,10))}.csv`;
-    a.download = fname;
+    const datePart = (dateInput.value || new Date().toISOString().slice(0,10)).replace(/-/g,'');
+    a.download = `milk${datePart}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     showToast('CSV downloaded');
   }
 
-  // WhatsApp send
+  // WhatsApp
   function sendWhatsAppForRow(tr){
     const shop = tr.querySelector('.shop').value || 'Customer';
     let mobile = (tr.querySelector('.mobile').value || '').replace(/\D/g,'');
@@ -695,31 +792,36 @@
     if(list.length) msg += list.join('%0A') + '%0A';
     msg += `Total: ₹${total}%0APaid: ₹${paid.toFixed(2)}%0ADue: ₹${due}%0A- Sambashiva Milk Agency`;
 
-    const waUrl = `https://wa.me/91${mobile}?text=${msg}`;
-    window.open(waUrl, '_blank');
+    window.open(`https://wa.me/91${mobile}?text=${msg}`, '_blank');
   }
 
-  // attach top controls
+  // attach controls
   addBtn.addEventListener('click', ()=>{ dataBody.appendChild(createRow()); autosaveSilent(); scrollToBottom(); });
   saveBtn.addEventListener('click', saveData);
   exportBtn.addEventListener('click', downloadCSV);
 
-  // when global prices change, recalc all
-  Object.values(priceInputs).forEach(inp=>{
-    inp.addEventListener('input', ()=>{
-      Array.from(dataBody.querySelectorAll('tr')).forEach(tr => calculateRow(tr));
+  // global price change -> recalc
+  Object.values(priceInputs).forEach(inp=> inp.addEventListener('input', ()=>{
+    Array.from(dataBody.querySelectorAll('tr')).forEach(tr => calculateRow(tr));
+    updateAllSums(); autosaveSilent();
+  }));
+
+  // planned top inputs changed -> update footer planned/calc remaining
+  Object.keys(plan).forEach(k=>{
+    plan[k].addEventListener('input', ()=>{
+      updateAllSums();
       autosaveSilent();
     });
   });
 
   dateInput.addEventListener('change', autosaveSilent);
-  totalAvailableInput.addEventListener('input', ()=>{ localStorage.setItem(STORAGE_KEY + '_available', totalAvailableInput.value || ''); updateTotalsAndLitres(); });
 
   function scrollToBottom(){ try{ window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }catch(e){} }
 
   // init
   (function init(){
     loadData();
+    updateAllSums();
   })();
 
 })();
