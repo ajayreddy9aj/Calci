@@ -1,249 +1,400 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>SAMBASHIVA MILK AGENCY</title>
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background-color: #fafafa;
-    margin: 0;
-    padding: 0;
-    color: #333;
+  :root{
+    --orange:#f97316;
+    --orange-dark:#d65b12;
+    --muted:#6b7280;
+    --bg:#faf7f3;
+    --card:#ffffff;
   }
-
-  header {
-    background: linear-gradient(to right, #0d6efd, #004aad);
-    color: white;
-    padding: 20px 10px;
-    text-align: center;
-  }
-
-  .agency-title {
-    font-size: 1.8em;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  .prop-info {
-    font-size: 0.95em;
-    margin: 3px 0;
-  }
-
-  .date-input {
-    background: white;
-    color: #333;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-weight: bold;
-    border: none;
-    margin-top: 8px;
-  }
-
-  main {
-    padding: 15px;
-    text-align: center;
-  }
-
-  table {
-    width: 98%;
-    margin: 0 auto;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-  }
-
-  th {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 5px;
-    font-weight: 600;
-  }
-
-  td {
-    padding: 6px 5px;
-    border: 1px solid #ddd;
-    text-align: center;
-  }
-
-  input[type="text"], input[type="number"], input[type="date"] {
-    width: 95%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 4px;
-    text-align: center;
-  }
-
-  button {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  button:hover {
-    background-color: #0056b3;
-  }
-
-  .send-btn {
-    background-color: #25D366;
-  }
-
-  .send-btn:hover {
-    background-color: #1ea955;
-  }
-
-  .total-display {
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-top: 20px;
-  }
-
-  footer {
-    margin-top: 25px;
-    padding: 10px;
-    font-size: 0.85em;
-    color: #555;
-  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+  header{background:linear-gradient(90deg,var(--orange),var(--orange-dark));color:white;padding:18px 12px;text-align:center}
+  .container{max-width:1100px;margin:14px auto;padding:0 12px}
+  .title{font-size:1.45rem;font-weight:800;margin:0}
+  .sub{margin:6px 0 0;font-size:0.95rem}
+  .header-right{margin-top:8px}
+  .date-input{background:var(--card);border:0;padding:8px 10px;border-radius:8px;font-weight:700}
+  .price-panel{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:12px 0}
+  .price-item{background:var(--card);padding:8px 10px;border-radius:8px;box-shadow:0 6px 18px rgba(2,6,23,0.04);display:flex;flex-direction:column;align-items:center;min-width:100px}
+  .price-item label{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .price-item input{width:86px;padding:6px;border-radius:6px;border:1px solid #e6e6e6;text-align:center}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+  .btn{background:var(--orange);color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+  .btn.ghost{background:white;color:var(--orange);border:1px solid rgba(0,0,0,0.06)}
+  .table-wrap{overflow:auto;border-radius:10px;background:var(--card);box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+  table{width:100%;border-collapse:collapse;min-width:1000px}
+  th,td{padding:8px 6px;border-bottom:1px solid #f3f3f3;text-align:center;font-size:13px}
+  thead th{background:linear-gradient(180deg,var(--orange),var(--orange-dark));color:white;position:sticky;top:0}
+  input[type="text"],input[type="number"],input[type="tel"],input[type="date"]{width:100%;padding:6px;border-radius:6px;border:1px solid #eaeaea;text-align:center;font-size:13px;background:transparent}
+  input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  .total-cell,.due-cell{font-weight:800}
+  .send-btn{background:#25D366;border:0;color:white;padding:6px 8px;border-radius:8px;cursor:pointer}
+  .footer{margin-top:10px;text-align:center;color:var(--muted);font-size:13px}
+  .toast{position:fixed;right:16px;bottom:16px;background:#111;color:#fff;padding:10px 12px;border-radius:8px;opacity:0;transform:translateY(8px);transition:all .2s}
+  .toast.show{opacity:1;transform:none}
+  @media (max-width:980px){table{min-width:980px}}
+  @media (max-width:640px){.price-item{min-width:88px}}
 </style>
 </head>
 <body>
-<header>
-  <p class="agency-title">SAMBASHIVA MILK AGENCY</p>
-  <p class="prop-info">Prop: <strong>K. AJAY KUMAR REDDY</strong></p>
-  <p class="prop-info">Mobile: <strong>7330892694</strong></p>
-  <input type="date" id="dateInput" class="date-input" />
-</header>
+  <header>
+    <div class="container">
+      <div class="title">SAMBASHIVA MILK AGENCY</div>
+      <div class="sub">Prop: <strong>K. AJAY KUMAR REDDY</strong> &nbsp; | &nbsp; Mobile: <strong>7330892694</strong></div>
+      <div class="header-right" style="margin-top:10px">
+        <input id="dateInput" class="date-input" type="date" aria-label="Date"/>
+      </div>
+    </div>
+  </header>
 
-<main>
-  <table id="priceTable">
-    <thead>
-      <tr>
-        <th>Shop Name</th>
-        <th>Mobile</th>
-        <th>TM</th>
-        <th>SM</th>
-        <th>SMALL M</th>
-        <th>SMALL C</th>
-        <th>A400</th>
-        <th>H500</th>
-        <th>Total</th>
-        <th>Paid</th>
-        <th>Due</th>
-        <th>Send</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><input type="text" placeholder="Shop"></td>
-        <td><input type="text" placeholder="Mobile"></td>
-        <td><input type="number" min="0" value="0"></td>
-        <td><input type="number" min="0" value="0"></td>
-        <td><input type="number" min="0" value="0"></td>
-        <td><input type="number" min="0" value="0"></td>
-        <td><input type="number" min="0" value="0"></td>
-        <td><input type="number" min="0" value="0"></td>
-        <td class="total">0</td>
-        <td><input type="number" min="0" value="0" class="paid"></td>
-        <td class="due">0</td>
-        <td><button class="send-btn" onclick="sendWhatsApp(this)">Send</button></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="container">
+    <!-- Price panel (editable) -->
+    <div class="price-panel" aria-label="Prices">
+      <div class="price-item"><label>TM (₹)</label><input id="price_TM" type="number" min="0" value="57"></div>
+      <div class="price-item"><label>SM (₹)</label><input id="price_SM" type="number" min="0" value="67"></div>
+      <div class="price-item"><label>SMALL M (₹)</label><input id="price_SMM" type="number" min="0" value="45"></div>
+      <div class="price-item"><label>SMALL C (₹)</label><input id="price_SMC" type="number" min="0" value="45"></div>
+      <div class="price-item"><label>A400 (₹)</label><input id="price_A400" type="number" min="0" value="70"></div>
+      <div class="price-item"><label>H500 (₹)</label><input id="price_H500" type="number" min="0" value="86"></div>
+      <div class="price-item"><label>FC400 (₹)</label><input id="price_FC400" type="number" min="0" value="77"></div>
+      <div class="price-item"><label>FC1L (₹)</label><input id="price_FC1L" type="number" min="0" value="76"></div>
+    </div>
 
-  <button onclick="addShop()">+ Add Shop</button>
-  <div class="total-display">Grand Total: ₹<span id="grandTotal">0</span></div>
-</main>
+    <div class="controls">
+      <button id="addBtn" class="btn">+ Add Shop</button>
+      <button id="saveBtn" class="btn ghost">Save Data</button>
+      <button id="exportBtn" class="btn ghost">Download CSV</button>
+    </div>
 
-<footer>
-  © <span id="year"></span> Sambashiva Milk Agency — All Rights Reserved
-</footer>
+    <div class="table-wrap" role="region" aria-label="Shops table">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>Shop Name</th><th>Mobile</th><th>TM</th><th>SM</th><th>SMALL M</th><th>SMALL C</th>
+            <th>A400</th><th>H500</th><th>FC400</th><th>FC1L</th><th>Total</th><th>Paid</th><th>Due</th><th>Send</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:12px;text-align:center;font-weight:700">Grand Total: ₹<span id="grandTotal">0</span></div>
+    <div class="footer">Saved locally on this device — data persists after refresh/close.</div>
+  </div>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
 
 <script>
-  const prices = { TM: 57, SM: 67, 'SMALL M': 45, 'SMALL C': 45, A400: 70, H500: 86 };
+(() => {
+  // Price inputs (editable)
+  const priceInputs = {
+    TM: document.getElementById('price_TM'),
+    SM: document.getElementById('price_SM'),
+    SMM: document.getElementById('price_SMM'),
+    SMC: document.getElementById('price_SMC'),
+    A400: document.getElementById('price_A400'),
+    H500: document.getElementById('price_H500'),
+    FC400: document.getElementById('price_FC400'),
+    FC1L: document.getElementById('price_FC1L')
+  };
 
-  function setDefaultDate() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('dateInput').value = today;
-    document.getElementById('year').textContent = new Date().getFullYear();
+  // LocalStorage keys
+  const LS_ROWS = 'milkcalci_rows_v2';
+  const LS_DATE = 'milkcalci_date_v2';
+  const LS_PRICES = 'milkcalci_prices_v2';
+
+  const tbody = document.querySelector('#dataTable tbody');
+  const addBtn = document.getElementById('addBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const grandEl = document.getElementById('grandTotal');
+  const dateInput = document.getElementById('dateInput');
+  const toast = document.getElementById('toast');
+
+  function showToast(text, ms=1400){
+    toast.textContent = text; toast.classList.add('show'); toast.setAttribute('aria-hidden','false');
+    clearTimeout(toast._t); toast._t = setTimeout(()=>{ toast.classList.remove('show'); toast.setAttribute('aria-hidden','true'); }, ms);
   }
 
-  function calculate() {
-    const rows = document.querySelectorAll('#priceTable tbody tr');
-    let grandTotal = 0;
-
-    rows.forEach(row => {
-      const inputs = row.querySelectorAll('input[type="number"]');
-      const totalCell = row.querySelector('.total');
-      const dueCell = row.querySelector('.due');
-      const paidInput = row.querySelector('.paid');
-
-      const [tm, sm, smm, smc, a400, h500] = [...inputs].slice(0, 6).map(i => parseFloat(i.value) || 0);
-      const paid = parseFloat(paidInput.value) || 0;
-
-      const total = tm * prices.TM + sm * prices.SM + smm * prices['SMALL M'] + smc * prices['SMALL C'] + a400 * prices.A400 + h500 * prices.H500;
-      const due = total - paid;
-
-      totalCell.textContent = total;
-      dueCell.textContent = due > 0 ? due : 0;
-      grandTotal += total;
-    });
-
-    document.getElementById('grandTotal').textContent = grandTotal;
+  // Utility: read current prices object
+  function readPrices(){
+    return {
+      TM: Number(priceInputs.TM.value || 0),
+      SM: Number(priceInputs.SM.value || 0),
+      'SMALL M': Number(priceInputs.SMM.value || 0),
+      'SMALL C': Number(priceInputs.SMC.value || 0),
+      A400: Number(priceInputs.A400.value || 0),
+      H500: Number(priceInputs.H500.value || 0),
+      FC400: Number(priceInputs.FC400.value || 0),
+      FC1L: Number(priceInputs.FC1L.value || 0)
+    };
   }
 
-  function addShop() {
-    const tbody = document.querySelector('#priceTable tbody');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" placeholder="Shop"></td>
-      <td><input type="text" placeholder="Mobile"></td>
-      <td><input type="number" min="0" value="0"></td>
-      <td><input type="number" min="0" value="0"></td>
-      <td><input type="number" min="0" value="0"></td>
-      <td><input type="number" min="0" value="0"></td>
-      <td><input type="number" min="0" value="0"></td>
-      <td><input type="number" min="0" value="0"></td>
-      <td class="total">0</td>
-      <td><input type="number" min="0" value="0" class="paid"></td>
-      <td class="due">0</td>
-      <td><button class="send-btn" onclick="sendWhatsApp(this)">Send</button></td>
+  // Create empty row element (inputs empty)
+  function createRow(data){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="shop" type="text" placeholder="Shop name" /></td>
+      <td><input class="mobile" type="tel" placeholder="10-digit mobile" /></td>
+      <td><input class="tm" type="number" min="0" inputmode="numeric" /></td>
+      <td><input class="sm" type="number" min="0" inputmode="numeric" /></td>
+      <td><input class="smm" type="number" min="0" inputmode="numeric" /></td>
+      <td><input class="smc" type="number" min="0" inputmode="numeric" /></td>
+      <td><input class="a400" type="number" min="0" inputmode="numeric" /></td>
+      <td><input class="h500" type="number" min="0" inputmode="numeric" /></td>
+      <td><input class="fc400" type="number" min="0" inputmode="numeric" /></td>
+      <td><input class="fc1l" type="number" min="0" inputmode="numeric" /></td>
+      <td class="total-cell">0</td>
+      <td><input class="paid" type="number" min="0" inputmode="numeric" /></td>
+      <td class="due-cell">0</td>
+      <td><button class="send-btn" type="button">Send</button></td>
     `;
-    tbody.appendChild(row);
-    addEventListeners(row);
-  }
-
-  function addEventListeners(row) {
-    row.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', calculate);
+    // fill if data provided
+    if(data){
+      tr.querySelector('.shop').value = data.shop || '';
+      tr.querySelector('.mobile').value = data.mobile || '';
+      tr.querySelector('.tm').value = data.TM || '';
+      tr.querySelector('.sm').value = data.SM || '';
+      tr.querySelector('.smm').value = data.SMALLM || '';
+      tr.querySelector('.smc').value = data.SMALLC || '';
+      tr.querySelector('.a400').value = data.A400 || '';
+      tr.querySelector('.h500').value = data.H500 || '';
+      tr.querySelector('.fc400').value = data.FC400 || '';
+      tr.querySelector('.fc1l').value = data.FC1L || '';
+      tr.querySelector('.paid').value = data.paid || '';
+    }
+    // attach events
+    tr.querySelectorAll('input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        calculateRow(tr);
+        autosaveSilent();
+      });
+      inp.addEventListener('focus', (e)=>{
+        // don't auto-clear; user types directly
+      });
     });
+    tr.querySelector('.send-btn').addEventListener('click', ()=> sendWhatsApp(tr));
+    return tr;
   }
 
-  function sendWhatsApp(btn) {
-    const row = btn.closest('tr');
-    const shop = row.querySelector('td:nth-child(1) input').value;
-    const mobile = row.querySelector('td:nth-child(2) input').value;
-    const total = row.querySelector('.total').textContent;
-    const due = row.querySelector('.due').textContent;
-    const date = document.getElementById('dateInput').value;
+  function calculateRow(tr){
+    const prices = readPrices();
+    const tm = Number(tr.querySelector('.tm').value || 0);
+    const sm = Number(tr.querySelector('.sm').value || 0);
+    const smm = Number(tr.querySelector('.smm').value || 0);
+    const smc = Number(tr.querySelector('.smc').value || 0);
+    const a400 = Number(tr.querySelector('.a400').value || 0);
+    const h500 = Number(tr.querySelector('.h500').value || 0);
+    const fc400 = Number(tr.querySelector('.fc400').value || 0);
+    const fc1l = Number(tr.querySelector('.fc1l').value || 0);
+    const paid = Number(tr.querySelector('.paid').value || 0);
 
-    if (!mobile) {
-      alert('Please enter a mobile number.');
-      return;
+    // Digit-by-digit safe calculation
+    const total = (tm * prices.TM) + (sm * prices.SM) + (smm * prices['SMALL M']) + (smc * prices['SMALL C'])
+                + (a400 * prices.A400) + (h500 * prices.H500) + (fc400 * prices.FC400) + (fc1l * prices.FC1L);
+
+    const due = Math.max(0, total - paid);
+
+    tr.querySelector('.total-cell').textContent = formatNum(total);
+    tr.querySelector('.due-cell').textContent = formatNum(due);
+    updateGrand();
+  }
+
+  function updateGrand(){
+    let g = 0;
+    tbody.querySelectorAll('tr').forEach(r=>{
+      const t = parseFloat(r.querySelector('.total-cell').textContent.replace(/,/g,'')) || 0;
+      g += t;
+    });
+    grandEl.textContent = formatNum(g);
+  }
+
+  function formatNum(n){
+    // integer if whole, else 2 decimals
+    if (Math.round(n) === n) return String(Math.round(n));
+    return Number(n).toFixed(2);
+  }
+
+  // Save / Load
+  function collectRows(){
+    const rows = [];
+    tbody.querySelectorAll('tr').forEach(tr=>{
+      const row = {
+        shop: tr.querySelector('.shop').value.trim(),
+        mobile: tr.querySelector('.mobile').value.trim(),
+        TM: tr.querySelector('.tm').value.trim(),
+        SM: tr.querySelector('.sm').value.trim(),
+        SMALLM: tr.querySelector('.smm').value.trim(),
+        SMALLC: tr.querySelector('.smc').value.trim(),
+        A400: tr.querySelector('.a400').value.trim(),
+        H500: tr.querySelector('.h500').value.trim(),
+        FC400: tr.querySelector('.fc400').value.trim(),
+        FC1L: tr.querySelector('.fc1l').value.trim(),
+        paid: tr.querySelector('.paid').value.trim()
+      };
+      // keep row if any cell has data
+      if(Object.values(row).some(v=>v !== '')) rows.push(row);
+    });
+    return rows;
+  }
+
+  function saveData(){
+    try{
+      const rows = collectRows();
+      localStorage.setItem(LS_ROWS, JSON.stringify(rows));
+      localStorage.setItem(LS_DATE, dateInput.value || '');
+      const pricesObj = readPrices();
+      localStorage.setItem(LS_PRICES, JSON.stringify(pricesObj));
+      showToast('Saved locally');
+    }catch(e){
+      console.error(e);
+      showToast('Save failed');
+    }
+  }
+
+  function autosaveSilent(){
+    try{
+      const rows = collectRows();
+      localStorage.setItem(LS_ROWS, JSON.stringify(rows));
+      localStorage.setItem(LS_DATE, dateInput.value || '');
+      const pricesObj = readPrices();
+      localStorage.setItem(LS_PRICES, JSON.stringify(pricesObj));
+    }catch(e){}
+  }
+
+  function loadData(){
+    // load prices first (if saved)
+    const savedPrices = localStorage.getItem(LS_PRICES);
+    if(savedPrices){
+      try{
+        const p = JSON.parse(savedPrices);
+        if(p){
+          if(typeof p.TM !== 'undefined') priceInputs.TM.value = p.TM;
+          if(typeof p.SM !== 'undefined') priceInputs.SM.value = p.SM;
+          if(typeof p.SMM !== 'undefined') priceInputs.SMM.value = p['SMALL M'];
+          if(typeof p.SMC !== 'undefined') priceInputs.SMC.value = p['SMALL C'];
+          if(typeof p.A400 !== 'undefined') priceInputs.A400.value = p.A400;
+          if(typeof p.H500 !== 'undefined') priceInputs.H500.value = p.H500;
+          if(typeof p.FC400 !== 'undefined') priceInputs.FC400.value = p.FC400;
+          if(typeof p.FC1L !== 'undefined') priceInputs.FC1L.value = p.FC1L;
+        }
+      }catch(e){}
     }
 
-    const msg = `Hello ${shop},%0AHere is your milk bill for ${date}:%0ATotal: ₹${total}%0ADue: ₹${due}%0A- Sambashiva Milk Agency`;
-    window.open(`https://wa.me/91${mobile}?text=${msg}`, '_blank');
+    const sd = localStorage.getItem(LS_DATE);
+    if(sd) dateInput.value = sd;
+    else dateInput.value = new Date().toISOString().slice(0,10);
+
+    const raw = localStorage.getItem(LS_ROWS);
+    tbody.innerHTML = '';
+    if(raw){
+      try{
+        const rows = JSON.parse(raw);
+        if(Array.isArray(rows) && rows.length){
+          rows.forEach(r => {
+            const tr = createRow(r);
+            tbody.appendChild(tr);
+            calculateRow(tr);
+          });
+          return;
+        }
+      }catch(e){}
+    }
+    // otherwise add a single empty row
+    const tr = createRow();
+    tbody.appendChild(tr);
   }
 
-  document.querySelectorAll('#priceTable tbody tr').forEach(addEventListeners);
-  setDefaultDate();
+  // CSV export
+  function downloadCSV(){
+    const rows = collectRows();
+    if(rows.length === 0){ showToast('No data to export'); return; }
+    const header = ['Shop Name','Mobile','TM','SM','SMALL M','SMALL C','A400','H500','FC400','FC1L','Total','Paid','Due','Date'];
+    const lines = [header.join(',')];
+    rows.forEach(r=>{
+      const tm=+(r.TM||0), sm=+(r.SM||0), smm=+(r.SMALLM||0), smc=+(r.SMALLC||0), a400=+(r.A400||0), h500=+(r.H500||0), fc400=+(r.FC400||0), fc1l=+(r.FC1L||0);
+      const prices = readPrices();
+      const total = tm*prices.TM + sm*prices.SM + smm*prices['SMALL M'] + smc*prices['SMALL C'] + a400*prices.A400 + h500*prices.H500 + fc400*prices.FC400 + fc1l*prices.FC1L;
+      const paid = +(r.paid||0);
+      const due = Math.max(0, total - paid);
+      const cols = [r.shop, r.mobile, r.TM, r.SM, r.SMALLM, r.SMALLC, r.A400, r.H500, r.FC400, r.FC1L, total.toFixed(2), paid.toFixed(2), due.toFixed(2), dateInput.value||''];
+      const safe = cols.map(c => `"${String(c).replace(/"/g,'""')}"`);
+      lines.push(safe.join(','));
+    });
+    const csv = lines.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `milkcalci_${(dateInput.value||new Date().toISOString().slice(0,10))}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('CSV downloaded');
+  }
+
+  // WhatsApp send for one row
+  function sendWhatsApp(tr){
+    const shop = tr.querySelector('.shop').value || 'Customer';
+    let mobile = (tr.querySelector('.mobile').value || '').replace(/\D/g,'');
+    if(!mobile){ alert('Enter mobile number'); return; }
+    if(mobile.length > 10 && mobile.startsWith('91')) mobile = mobile.slice(-10);
+    if(mobile.length !== 10){ alert('Enter a valid 10-digit mobile number'); return; }
+    const tm = Number(tr.querySelector('.tm').value || 0);
+    const sm = Number(tr.querySelector('.sm').value || 0);
+    const smm = Number(tr.querySelector('.smm').value || 0);
+    const smc = Number(tr.querySelector('.smc').value || 0);
+    const a400 = Number(tr.querySelector('.a400').value || 0);
+    const h500 = Number(tr.querySelector('.h500').value || 0);
+    const fc400 = Number(tr.querySelector('.fc400').value || 0);
+    const fc1l = Number(tr.querySelector('.fc1l').value || 0);
+    const total = tr.querySelector('.total-cell').textContent || '0';
+    const paid = Number(tr.querySelector('.paid').value || 0);
+    const due = tr.querySelector('.due-cell').textContent || '0';
+    const date = dateInput.value || new Date().toISOString().slice(0,10);
+
+    // Build message
+    let msg = `Hello ${shop},%0AYour milk bill for ${date}:%0A`;
+    const items = [];
+    if(tm) items.push(`TM: ${tm}`);
+    if(sm) items.push(`SM: ${sm}`);
+    if(smm) items.push(`SMALL M: ${smm}`);
+    if(smc) items.push(`SMALL C: ${smc}`);
+    if(a400) items.push(`A400: ${a400}`);
+    if(h500) items.push(`H500: ${h500}`);
+    if(fc400) items.push(`FC400: ${fc400}`);
+    if(fc1l) items.push(`FC1L: ${fc1l}`);
+    if(items.length) msg += items.join(', ') + '%0A';
+    msg += `Total: ₹${total}%0APaid: ₹${paid.toFixed(2)}%0ADue: ₹${due}%0A- Sambashiva Milk Agency`;
+
+    const wa = `https://wa.me/91${mobile}?text=${msg}`;
+    window.open(wa, '_blank');
+  }
+
+  // Add row action
+  addBtn.addEventListener('click', ()=>{ tbody.appendChild(createRow()); autosaveSilent(); });
+
+  // Save / export
+  saveBtn.addEventListener('click', saveData);
+  exportBtn.addEventListener('click', downloadCSV);
+
+  // Update when prices change (recalculate all)
+  Object.values(priceInputs).forEach(inp => inp.addEventListener('input', ()=>{
+    tbody.querySelectorAll('tr').forEach(tr => calculateRow(tr));
+    autosaveSilent();
+  }));
+
+  // date change autosave
+  dateInput.addEventListener('change', autosaveSilent);
+
+  // initialization
+  loadData();
+})();
 </script>
 </body>
 </html>
