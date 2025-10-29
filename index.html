@@ -1,218 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SAMBASHIVA MILK AGENCY</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #fafafa;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SAMBASHIVA MILK AGENCY</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background-color: #fafafa;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
 
-    header {
-      background: linear-gradient(to right, #0d6efd, #004aad);
-      color: white;
-      padding: 15px 10px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
+  header {
+    background: linear-gradient(to right, #0d6efd, #004aad);
+    color: white;
+    padding: 20px 10px;
+    text-align: center;
+  }
 
-    .header-left {
-      text-align: left;
-      flex: 1;
-    }
+  .agency-title {
+    font-size: 1.8em;
+    font-weight: 700;
+    margin: 0;
+  }
 
-    .header-right {
-      text-align: right;
-      flex: 1;
-    }
+  .prop-info {
+    font-size: 0.95em;
+    margin: 3px 0;
+  }
 
-    .agency-title {
-      font-size: 1.6em;
-      font-weight: bold;
-      margin: 0;
-    }
+  .date-input {
+    background: white;
+    color: #333;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-weight: bold;
+    border: none;
+    margin-top: 8px;
+  }
 
-    .prop-info {
-      font-size: 0.9em;
-      margin-top: 3px;
-    }
+  main {
+    padding: 15px;
+    text-align: center;
+  }
 
-    .date-box {
-      background: white;
-      color: #333;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-weight: bold;
-      display: inline-block;
-    }
+  table {
+    width: 98%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
 
-    main {
-      padding: 20px;
-      text-align: center;
-    }
+  th {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 5px;
+    font-weight: 600;
+  }
 
-    table {
-      width: 98%;
-      margin: 0 auto;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    }
+  td {
+    padding: 6px 5px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
 
-    th {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 5px;
-      font-weight: 600;
-    }
+  input[type="text"], input[type="number"], input[type="date"] {
+    width: 95%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px;
+    text-align: center;
+  }
 
-    td {
-      padding: 6px 5px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
 
-    input[type="text"], input[type="number"] {
-      width: 90%;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 4px;
-      text-align: center;
-    }
+  button:hover {
+    background-color: #0056b3;
+  }
 
-    button {
-      margin-top: 15px;
-      background-color: #007bff;
-      color: white;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1em;
-      transition: 0.2s;
-    }
+  .send-btn {
+    background-color: #25D366;
+  }
 
-    button:hover {
-      background-color: #0056b3;
-    }
+  .send-btn:hover {
+    background-color: #1ea955;
+  }
 
-    .total-display {
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-top: 20px;
-      color: #222;
-    }
+  .total-display {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 20px;
+  }
 
-    footer {
-      margin-top: 25px;
-      padding: 10px;
-      font-size: 0.85em;
-      color: #555;
-    }
-  </style>
+  footer {
+    margin-top: 25px;
+    padding: 10px;
+    font-size: 0.85em;
+    color: #555;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <div class="header-left">
-      <p class="agency-title">SAMBASHIVA MILK AGENCY</p>
-      <p class="prop-info">Prop: <strong>K. AJAY KUMAR REDDY</strong></p>
-      <p class="prop-info">Mobile: <strong>7330892694</strong></p>
-    </div>
-    <div class="header-right">
-      <div class="date-box">
-        Date: <span id="currentDate"></span>
-      </div>
-    </div>
-  </header>
+<header>
+  <p class="agency-title">SAMBASHIVA MILK AGENCY</p>
+  <p class="prop-info">Prop: <strong>K. AJAY KUMAR REDDY</strong></p>
+  <p class="prop-info">Mobile: <strong>7330892694</strong></p>
+  <input type="date" id="dateInput" class="date-input" />
+</header>
 
-  <main>
-    <table id="priceTable">
-      <thead>
-        <tr>
-          <th>Shop Name</th>
-          <th>TM</th>
-          <th>SM</th>
-          <th>SMALL M</th>
-          <th>SMALL C</th>
-          <th>A400</th>
-          <th>H500</th>
-          <th>Total</th>
-          <th>Paid</th>
-          <th>Due</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input type="text" placeholder="Shop"></td>
-          <td><input type="number" min="0" value="0"></td>
-          <td><input type="number" min="0" value="0"></td>
-          <td><input type="number" min="0" value="0"></td>
-          <td><input type="number" min="0" value="0"></td>
-          <td><input type="number" min="0" value="0"></td>
-          <td><input type="number" min="0" value="0"></td>
-          <td class="total">0</td>
-          <td><input type="number" min="0" value="0" class="paid"></td>
-          <td class="due">0</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <button onclick="addShop()">+ Add Shop</button>
-    <div class="total-display">Grand Total: ₹<span id="grandTotal">0</span></div>
-  </main>
-
-  <footer>
-    © <span id="year"></span> Sambashiva Milk Agency — All Rights Reserved
-  </footer>
-
-  <script>
-    const prices = { TM: 57, SM: 67, 'SMALL M': 45, 'SMALL C': 45, A400: 70, H500: 86 };
-
-    function updateDate() {
-      const today = new Date();
-      const formatted = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-      document.getElementById('currentDate').textContent = formatted;
-      document.getElementById('year').textContent = today.getFullYear();
-    }
-
-    function calculate() {
-      const rows = document.querySelectorAll('#priceTable tbody tr');
-      let grandTotal = 0;
-
-      rows.forEach(row => {
-        const inputs = row.querySelectorAll('input[type="number"]');
-        const totalCell = row.querySelector('.total');
-        const dueCell = row.querySelector('.due');
-        const paidInput = row.querySelector('.paid');
-
-        const [tm, sm, smm, smc, a400, h500] = [...inputs].slice(0, 6).map(i => parseFloat(i.value) || 0);
-        const paid = parseFloat(paidInput.value) || 0;
-
-        const total = tm * prices.TM + sm * prices.SM + smm * prices['SMALL M'] + smc * prices['SMALL C'] + a400 * prices.A400 + h500 * prices.H500;
-        const due = total - paid;
-
-        totalCell.textContent = total;
-        dueCell.textContent = due > 0 ? due : 0;
-        grandTotal += total;
-      });
-
-      document.getElementById('grandTotal').textContent = grandTotal;
-    }
-
-    function addShop() {
-      const tbody = document.querySelector('#priceTable tbody');
-      const row = document.createElement('tr');
-      row.innerHTML = `
+<main>
+  <table id="priceTable">
+    <thead>
+      <tr>
+        <th>Shop Name</th>
+        <th>Mobile</th>
+        <th>TM</th>
+        <th>SM</th>
+        <th>SMALL M</th>
+        <th>SMALL C</th>
+        <th>A400</th>
+        <th>H500</th>
+        <th>Total</th>
+        <th>Paid</th>
+        <th>Due</th>
+        <th>Send</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
         <td><input type="text" placeholder="Shop"></td>
+        <td><input type="text" placeholder="Mobile"></td>
         <td><input type="number" min="0" value="0"></td>
         <td><input type="number" min="0" value="0"></td>
         <td><input type="number" min="0" value="0"></td>
@@ -222,19 +152,98 @@
         <td class="total">0</td>
         <td><input type="number" min="0" value="0" class="paid"></td>
         <td class="due">0</td>
-      `;
-      tbody.appendChild(row);
-      addEventListeners(row);
+        <td><button class="send-btn" onclick="sendWhatsApp(this)">Send</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button onclick="addShop()">+ Add Shop</button>
+  <div class="total-display">Grand Total: ₹<span id="grandTotal">0</span></div>
+</main>
+
+<footer>
+  © <span id="year"></span> Sambashiva Milk Agency — All Rights Reserved
+</footer>
+
+<script>
+  const prices = { TM: 57, SM: 67, 'SMALL M': 45, 'SMALL C': 45, A400: 70, H500: 86 };
+
+  function setDefaultDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dateInput').value = today;
+    document.getElementById('year').textContent = new Date().getFullYear();
+  }
+
+  function calculate() {
+    const rows = document.querySelectorAll('#priceTable tbody tr');
+    let grandTotal = 0;
+
+    rows.forEach(row => {
+      const inputs = row.querySelectorAll('input[type="number"]');
+      const totalCell = row.querySelector('.total');
+      const dueCell = row.querySelector('.due');
+      const paidInput = row.querySelector('.paid');
+
+      const [tm, sm, smm, smc, a400, h500] = [...inputs].slice(0, 6).map(i => parseFloat(i.value) || 0);
+      const paid = parseFloat(paidInput.value) || 0;
+
+      const total = tm * prices.TM + sm * prices.SM + smm * prices['SMALL M'] + smc * prices['SMALL C'] + a400 * prices.A400 + h500 * prices.H500;
+      const due = total - paid;
+
+      totalCell.textContent = total;
+      dueCell.textContent = due > 0 ? due : 0;
+      grandTotal += total;
+    });
+
+    document.getElementById('grandTotal').textContent = grandTotal;
+  }
+
+  function addShop() {
+    const tbody = document.querySelector('#priceTable tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" placeholder="Shop"></td>
+      <td><input type="text" placeholder="Mobile"></td>
+      <td><input type="number" min="0" value="0"></td>
+      <td><input type="number" min="0" value="0"></td>
+      <td><input type="number" min="0" value="0"></td>
+      <td><input type="number" min="0" value="0"></td>
+      <td><input type="number" min="0" value="0"></td>
+      <td><input type="number" min="0" value="0"></td>
+      <td class="total">0</td>
+      <td><input type="number" min="0" value="0" class="paid"></td>
+      <td class="due">0</td>
+      <td><button class="send-btn" onclick="sendWhatsApp(this)">Send</button></td>
+    `;
+    tbody.appendChild(row);
+    addEventListeners(row);
+  }
+
+  function addEventListeners(row) {
+    row.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', calculate);
+    });
+  }
+
+  function sendWhatsApp(btn) {
+    const row = btn.closest('tr');
+    const shop = row.querySelector('td:nth-child(1) input').value;
+    const mobile = row.querySelector('td:nth-child(2) input').value;
+    const total = row.querySelector('.total').textContent;
+    const due = row.querySelector('.due').textContent;
+    const date = document.getElementById('dateInput').value;
+
+    if (!mobile) {
+      alert('Please enter a mobile number.');
+      return;
     }
 
-    function addEventListeners(row) {
-      row.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', calculate);
-      });
-    }
+    const msg = `Hello ${shop},%0AHere is your milk bill for ${date}:%0ATotal: ₹${total}%0ADue: ₹${due}%0A- Sambashiva Milk Agency`;
+    window.open(`https://wa.me/91${mobile}?text=${msg}`, '_blank');
+  }
 
-    document.querySelectorAll('#priceTable tbody tr').forEach(addEventListeners);
-    updateDate();
-  </script>
+  document.querySelectorAll('#priceTable tbody tr').forEach(addEventListeners);
+  setDefaultDate();
+</script>
 </body>
 </html>
