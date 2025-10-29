@@ -1,57 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobile Price Calculator</title>
-<style>
-body {font-family: Arial, sans-serif; background: #f7f7f8; padding: 20px;}
-button {padding: 10px 15px; border: none; background: #0b7bff; color: #fff; border-radius: 8px; margin-top: 10px;}
-table {border-collapse: collapse; margin-top: 10px; width: 100%; max-width: 800px;}
-td, th {padding: 8px; border: 1px solid #ddd; text-align: center;}
-input {width: 70px; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px;}
-h2 {color: #333;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Price Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f8f8f8;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin-top: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    h2 {
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-<h2>Mobile Price Calculator</h2>
-<table>
-<thead>
-<tr><th>Shop Name</th><th>TM</th><th>SM</th><th>SMALL M</th><th>SMALL C</th><th>A400</th><th>H500</th><th>Total</th></tr>
-</thead>
-<tbody id="bodyTable"></tbody>
-</table>
-<button onclick="addRow()">➕ Add Shop</button>
-<h3>Grand Total: ₹<span id="grandTotal">0</span></h3>
 
-<script>
-const prices = {TM:57, SM:67, 'SMALL M':45, 'SMALL C':45, A400:70, H500:86};
+  <h2>Mobile Price Calculator</h2>
 
-function addRow(){
-  const tbody = document.getElementById('bodyTable');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td><input placeholder='Shop' class='shop'></td>` +
-    Object.keys(prices).map(k => `<td><input type='number' min='0' value='0' class='${k}' onchange='calcRow(this)'></td>`).join('') +
-    `<td class='total'>0</td>`;
-  tbody.appendChild(tr);
-}
+  <table>
+    <thead>
+      <tr>
+        <th>Shop Name</th>
+        <th>TM (₹57)</th>
+        <th>SM (₹67)</th>
+        <th>SMALL M (₹45)</th>
+        <th>SMALL C (₹45)</th>
+        <th>A400 (₹70)</th>
+        <th>H500 (₹86)</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" name="shop" placeholder="Shop"></td>
+        <td><input type="number" name="TM" value="0"></td>
+        <td><input type="number" name="SM" value="0"></td>
+        <td><input type="number" name="SMALLM" value="0"></td>
+        <td><input type="number" name="SMALLC" value="0"></td>
+        <td><input type="number" name="A400" value="0"></td>
+        <td><input type="number" name="H500" value="0"></td>
+        <td><input type="number" name="total" value="0" readonly></td>
+      </tr>
+    </tbody>
+  </table>
 
-function calcRow(el){
-  const row = el.closest('tr');
-  let sum = 0;
-  for (const k in prices) {
-    const v = parseFloat(row.querySelector('.' + k).value) || 0;
-    sum += v * prices[k];
-  }
-  row.querySelector('.total').textContent = sum.toFixed(2);
-  calcTotal();
-}
+  <button id="addShop">+ Add Shop</button>
 
-function calcTotal(){
-  let g = 0;
-  document.querySelectorAll('.total').forEach(td => g += parseFloat(td.textContent) || 0);
-  document.getElementById('grandTotal').textContent = g.toFixed(2);
-}
-</script>
+  <h3>Grand Total: <span id="grand-total">₹0</span></h3>
+
+  <script>
+    const prices = {
+      TM: 57,
+      SM: 67,
+      SMALLM: 45,
+      SMALLC: 45,
+      A400: 70,
+      H500: 86
+    };
+
+    function calculateRowTotal(row) {
+      const inputs = row.querySelectorAll('input[type="number"]');
+      let total = 0;
+
+      total += parseFloat(inputs[0].value || 0) * prices.TM;
+      total += parseFloat(inputs[1].value || 0) * prices.SM;
+      total += parseFloat(inputs[2].value || 0) * prices.SMALLM;
+      total += parseFloat(inputs[3].value || 0) * prices.SMALLC;
+      total += parseFloat(inputs[4].value || 0) * prices.A400;
+      total += parseFloat(inputs[5].value || 0) * prices.H500;
+
+      inputs[6].value = total.toFixed(2);
+      calculateGrandTotal();
+    }
+
+    function calculateGrandTotal() {
+      let grandTotal = 0;
+      document.querySelectorAll('input[name="total"]').forEach(cell => {
+        grandTotal += parseFloat(cell.value || 0);
+      });
+      document.getElementById('grand-total').textContent = '₹' + grandTotal.toFixed(2);
+    }
+
+    function addRow() {
+      const table = document.querySelector('table tbody');
+      const newRow = table.rows[0].cloneNode(true);
+      newRow.querySelectorAll('input').forEach(input => input.value = 0);
+      table.appendChild(newRow);
+      attachEvents(newRow);
+    }
+
+    function attachEvents(row) {
+      row.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('input', () => calculateRowTotal(row));
+      });
+    }
+
+    document.getElementById('addShop').addEventListener('click', addRow);
+    document.querySelectorAll('table tbody tr').forEach(row => attachEvents(row));
+  </script>
+
 </body>
 </html>
