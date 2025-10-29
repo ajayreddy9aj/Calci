@@ -3,120 +3,238 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MilkCalci</title>
+  <title>SAMBASHIVA MILK AGENCY</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f8f8f8;
-      margin: 20px;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #fafafa;
+      margin: 0;
+      padding: 0;
+      color: #333;
     }
+
+    header {
+      background: linear-gradient(to right, #0d6efd, #004aad);
+      color: white;
+      padding: 15px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      text-align: left;
+      flex: 1;
+    }
+
+    .header-right {
+      text-align: right;
+      flex: 1;
+    }
+
+    .agency-title {
+      font-size: 1.6em;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .prop-info {
+      font-size: 0.9em;
+      margin-top: 3px;
+    }
+
+    .date-box {
+      background: white;
+      color: #333;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    main {
+      padding: 20px;
+      text-align: center;
+    }
+
     table {
-      width: 100%;
+      width: 98%;
+      margin: 0 auto;
       border-collapse: collapse;
       background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
     }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
+
     th {
-      background: #eee;
-    }
-    input {
-      width: 60px;
-      text-align: center;
-    }
-    button {
       background-color: #007bff;
       color: white;
-      border: none;
-      padding: 10px 15px;
-      margin-top: 10px;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 10px 5px;
+      font-weight: 600;
     }
+
+    td {
+      padding: 6px 5px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 90%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 4px;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 15px;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: 0.2s;
+    }
+
     button:hover {
       background-color: #0056b3;
     }
-    h2 {
-      color: #333;
+
+    .total-display {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 20px;
+      color: #222;
+    }
+
+    footer {
+      margin-top: 25px;
+      padding: 10px;
+      font-size: 0.85em;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <h2>MilkCalci</h2>
+  <header>
+    <div class="header-left">
+      <p class="agency-title">SAMBASHIVA MILK AGENCY</p>
+      <p class="prop-info">Prop: <strong>K. AJAY KUMAR REDDY</strong></p>
+      <p class="prop-info">Mobile: <strong>7330892694</strong></p>
+    </div>
+    <div class="header-right">
+      <div class="date-box">
+        Date: <span id="currentDate"></span>
+      </div>
+    </div>
+  </header>
 
-  <table id="shopTable">
-    <thead>
-      <tr>
-        <th>Shop Name</th>
-        <th>TM (₹57)</th>
-        <th>SM (₹67)</th>
-        <th>SMALL M (₹45)</th>
-        <th>SMALL C (₹45)</th>
-        <th>A400 (₹70)</th>
-        <th>H500 (₹86)</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><input type="text" name="shop" placeholder="Shop"></td>
-        <td><input type="number" name="TM" value="0"></td>
-        <td><input type="number" name="SM" value="0"></td>
-        <td><input type="number" name="SMALLM" value="0"></td>
-        <td><input type="number" name="SMALLC" value="0"></td>
-        <td><input type="number" name="A400" value="0"></td>
-        <td><input type="number" name="H500" value="0"></td>
-        <td><input type="text" name="total" value="0" readonly></td>
-      </tr>
-    </tbody>
-  </table>
+  <main>
+    <table id="priceTable">
+      <thead>
+        <tr>
+          <th>Shop Name</th>
+          <th>TM</th>
+          <th>SM</th>
+          <th>SMALL M</th>
+          <th>SMALL C</th>
+          <th>A400</th>
+          <th>H500</th>
+          <th>Total</th>
+          <th>Paid</th>
+          <th>Due</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" placeholder="Shop"></td>
+          <td><input type="number" min="0" value="0"></td>
+          <td><input type="number" min="0" value="0"></td>
+          <td><input type="number" min="0" value="0"></td>
+          <td><input type="number" min="0" value="0"></td>
+          <td><input type="number" min="0" value="0"></td>
+          <td><input type="number" min="0" value="0"></td>
+          <td class="total">0</td>
+          <td><input type="number" min="0" value="0" class="paid"></td>
+          <td class="due">0</td>
+        </tr>
+      </tbody>
+    </table>
 
-  <button id="addShop">+ Add Shop</button>
-  <h3>Grand Total: <span id="grandTotal">₹0</span></h3>
+    <button onclick="addShop()">+ Add Shop</button>
+    <div class="total-display">Grand Total: ₹<span id="grandTotal">0</span></div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Sambashiva Milk Agency — All Rights Reserved
+  </footer>
 
   <script>
-    const prices = { TM: 57, SM: 67, SMALLM: 45, SMALLC: 45, A400: 70, H500: 86 };
+    const prices = { TM: 57, SM: 67, 'SMALL M': 45, 'SMALL C': 45, A400: 70, H500: 86 };
 
-    function calculateRow(row) {
-      const TM = +row.querySelector('input[name="TM"]').value || 0;
-      const SM = +row.querySelector('input[name="SM"]').value || 0;
-      const SMALLM = +row.querySelector('input[name="SMALLM"]').value || 0;
-      const SMALLC = +row.querySelector('input[name="SMALLC"]').value || 0;
-      const A400 = +row.querySelector('input[name="A400"]').value || 0;
-      const H500 = +row.querySelector('input[name="H500"]').value || 0;
-      const total = TM * prices.TM + SM * prices.SM + SMALLM * prices.SMALLM + SMALLC * prices.SMALLC + A400 * prices.A400 + H500 * prices.H500;
-      row.querySelector('input[name="total"]').value = total.toFixed(2);
-      calculateGrandTotal();
+    function updateDate() {
+      const today = new Date();
+      const formatted = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      document.getElementById('currentDate').textContent = formatted;
+      document.getElementById('year').textContent = today.getFullYear();
     }
 
-    function calculateGrandTotal() {
-      let sum = 0;
-      document.querySelectorAll('input[name="total"]').forEach(t => sum += +t.value || 0);
-      document.getElementById('grandTotal').textContent = '₹' + sum.toFixed(2);
-    }
+    function calculate() {
+      const rows = document.querySelectorAll('#priceTable tbody tr');
+      let grandTotal = 0;
 
-    function addRow() {
-      const tbody = document.querySelector('#shopTable tbody');
-      const row = tbody.rows[0].cloneNode(true);
-      row.querySelectorAll('input').forEach(i => {
-        if (i.type === 'text' || i.type === 'number') i.value = 0;
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        const totalCell = row.querySelector('.total');
+        const dueCell = row.querySelector('.due');
+        const paidInput = row.querySelector('.paid');
+
+        const [tm, sm, smm, smc, a400, h500] = [...inputs].slice(0, 6).map(i => parseFloat(i.value) || 0);
+        const paid = parseFloat(paidInput.value) || 0;
+
+        const total = tm * prices.TM + sm * prices.SM + smm * prices['SMALL M'] + smc * prices['SMALL C'] + a400 * prices.A400 + h500 * prices.H500;
+        const due = total - paid;
+
+        totalCell.textContent = total;
+        dueCell.textContent = due > 0 ? due : 0;
+        grandTotal += total;
       });
-      row.querySelector('input[name="shop"]').value = '';
+
+      document.getElementById('grandTotal').textContent = grandTotal;
+    }
+
+    function addShop() {
+      const tbody = document.querySelector('#priceTable tbody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" placeholder="Shop"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td><input type="number" min="0" value="0"></td>
+        <td class="total">0</td>
+        <td><input type="number" min="0" value="0" class="paid"></td>
+        <td class="due">0</td>
+      `;
       tbody.appendChild(row);
-      bindEvents(row);
+      addEventListeners(row);
     }
 
-    function bindEvents(row) {
-      row.querySelectorAll('input[type="number"]').forEach(i => {
-        i.addEventListener('input', () => calculateRow(row));
+    function addEventListeners(row) {
+      row.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', calculate);
       });
     }
 
-    document.getElementById('addShop').addEventListener('click', addRow);
-    bindEvents(document.querySelector('#shopTable tbody tr'));
+    document.querySelectorAll('#priceTable tbody tr').forEach(addEventListeners);
+    updateDate();
   </script>
 </body>
 </html>
