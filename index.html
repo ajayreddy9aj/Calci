@@ -4,28 +4,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Retail Sales Tracker</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f9fafb; }
-    h1 { text-align: center; position: relative; }
-    #totalDisplay { position: absolute; right: 20px; top: 0; font-size: 18px; color: #1e293b; background: #e2e8f0; padding: 6px 12px; border-radius: 6px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; font-size: 14px; }
-    th { background-color: #e2e8f0; }
-    button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
-    .edit { background: #0ea5e9; color: white; width: 90px; }
-    .send { background: #16a34a; color: white; width: 90px; }
+    body { font-family: Arial, sans-serif; padding: 18px; background: #f9fafb; }
+    h1 { text-align: center; position: relative; margin-bottom: 6px; }
+    #totalDisplay { position: absolute; right: 20px; top: 0; font-size: 15px; color: #0f172a; background: #e2e8f0; padding: 6px 10px; border-radius: 6px; }
+    #grandTotal { position: absolute; right: 260px; top: 0; font-size: 15px; color: #0f172a; background: #f8fafc; padding: 6px 10px; border-radius: 6px; border:1px solid #e2e8f0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 26px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 6px; text-align: center; font-size: 13px; }
+    th { background-color: #eef2f7; }
+    button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .edit { background: #0ea5e9; color: white; width: 100px; }
+    .send { background: #16a34a; color: white; width: 100px; }
     .delete { background: #ef4444; color: white; }
-    input[type='number'], input[type='text'] { width: 55px; text-align: center; font-size: 13px; }
-    #priceModal { display:none; position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); background:white; border:1px solid #ccc; padding:25px; border-radius:12px; box-shadow:0 2px 20px rgba(0,0,0,0.4); width:320px; }
-    #priceModal input { width:80px; }
+    input[type='number'] { width: 38px; text-align: center; font-size: 13px; }
+    input[type='text'] { width: 90px; text-align: center; font-size: 13px; }
+    .mobile-input { width: 120px; }
+    .paid-input { width: 80px; }
+    .due-input { width: 80px; }
+    #priceModal { display:none; position:fixed; top:35%; left:50%; transform:translate(-50%,-50%); background:white; border:1px solid #ccc; padding:28px; border-radius:12px; box-shadow:0 6px 30px rgba(0,0,0,0.35); width:360px; }
+    #priceModal input { width:100px; }
     #priceModal button { margin-top:10px; }
-    #priceModal h3 { text-align:center; }
-    small { display:block; font-size:11px; color:#4b5563; }
-    .totals-row th { background:#f1f5f9; font-weight:bold; }
+    #priceModal h3 { text-align:center; margin-bottom:8px; }
+    small { display:block; font-size:11px; color:#374151; }
+    .totals-row th { background:#f8fafc; font-weight:bold; }
+    .controls { margin-top:12px; display:flex; gap:8px; }
   </style>
 </head>
 <body>
-  <h1>🧾 Daily Retail Sales Tracker <span id="totalDisplay">Total: ₹0</span></h1>
-  <label><strong>Date:</strong> <input type="date" id="dateField" onchange="updateDate()" /></label>  <table id="salesTable">
+  <h1>🧾 Daily Retail Sales Tracker <span id="grandTotal">Grand Total: ₹0</span><span id="totalDisplay">Total: ₹0</span></h1>
+  <label><strong>Date:</strong> <input type="date" id="dateField" onchange="updateDate()" /></label>
+  <div class="controls">
+    <button onclick="addRow()">➕ Add Customer</button>
+    <button onclick="saveCurrentDate()">💾 Save</button>
+    <button onclick="openPrintView()">🖨️ Print / PDF</button>
+  </div>  <table id="salesTable">
     <thead>
       <tr class="totals-row">
         <th>Totals</th>
@@ -59,8 +70,7 @@
       </tr>
     </thead>
     <tbody id="salesBody"></tbody>
-  </table>
-  <button onclick="addRow()">➕ Add Customer</button>  <div id="priceModal">
+  </table>  <div id="priceModal">
     <h3>Edit Prices for Customer</h3>
     <table>
       <tr><td>TM500:</td><td><input type="number" id="p_TM500" /></td></tr>
@@ -80,51 +90,21 @@
     const customPrices = new WeakMap();
     let currentEditingRow = null;
 
-    function loadAllData() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch (e) { console.error('loadAllData', e); return {}; }
-    }
-
+    function loadAllData() { try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; } catch (e) { console.error('loadAllData', e); return {}; } }
     function saveAllData(obj) { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
 
     function saveCurrentDate() {
-      const date = document.getElementById('dateField').value;
-      if (!date) return;
-      const tbody = document.getElementById('salesBody');
-      const rows = Array.from(tbody.rows).map(r => Array.from(r.querySelectorAll('input')).map(i => i.value));
-      const all = loadAllData();
-      all[date] = rows;
-      saveAllData(all);
-      updateTotals();
+      const date = document.getElementById('dateField').value; if (!date) return; const tbody = document.getElementById('salesBody'); const rows = Array.from(tbody.rows).map(r => Array.from(r.querySelectorAll('input')).map(i => i.value)); const all = loadAllData(); all[date] = rows; saveAllData(all); updateTotals();
     }
 
-    function loadDate(date) {
-      const all = loadAllData();
-      const tbody = document.getElementById('salesBody');
-      tbody.innerHTML = '';
-      if (all[date] && all[date].length) all[date].forEach(cells => insertRowFromArray(cells));
-      else {
-        const dates = Object.keys(all).sort().reverse();
-        if (dates.length) {
-          const last = dates[0];
-          if (all[last] && all[last].length) all[last].forEach(cells => insertRowFromArray(cells));
-        }
-      }
-      updateTotals();
-    }
+    function loadDate(date) { const all = loadAllData(); const tbody = document.getElementById('salesBody'); tbody.innerHTML = ''; if (all[date] && all[date].length) all[date].forEach(cells => insertRowFromArray(cells)); else { const dates = Object.keys(all).sort().reverse(); if (dates.length) { const last = dates[0]; if (all[last] && all[last].length) all[last].forEach(cells => insertRowFromArray(cells)); } } updateTotals(); }
 
     function insertRowFromArray(values) {
-      const tbody = document.getElementById('salesBody');
-      const row = document.createElement('tr');
-      let idx = 0;
-      row.innerHTML = `
-        <td><input type='text' value='${values[idx++] || ''}'></td>
-        <td><input type='text' value='${values[idx++] || ''}'></td>`;
+      const tbody = document.getElementById('salesBody'); const row = document.createElement('tr'); let idx = 0;
+      row.innerHTML = `\n        <td><input type='text' value='${values[idx++] || ''}'></td>\n        <td><input class='mobile-input' type='text' value='${values[idx++] || ''}'></td>`;
       for (let i = 0; i < 8; i++) row.innerHTML += `<td><input type='number' min='0' value='${values[idx++] || ''}' onchange='calcTotal(this)'></td>`;
-      row.innerHTML += `<td><input type='number' min='0' value='${values[idx++] || ''}' onchange='calcTotal(this)'></td>`;
-      row.innerHTML += `<td><input type='number' min='0' value='${values[idx++] || ''}'></td>`;
+      row.innerHTML += `<td><input class='paid-input' type='number' min='0' value='${values[idx++] || ''}' readonly></td>`;
+      row.innerHTML += `<td><input class='due-input' type='number' min='0' value='${values[idx++] || ''}'></td>`;
       row.innerHTML += `<td><button class='edit' onclick='editRow(this)'>✏️ Edit</button></td>`;
       row.innerHTML += `<td><button class='send' onclick='sendWhatsApp(this)'>📤 Send</button></td>`;
       row.innerHTML += `<td><button class='delete' onclick='confirmDelete(this)'>❌</button></td>`;
@@ -132,111 +112,41 @@
       Array.from(row.querySelectorAll('input[type="number"]')).forEach(i => i.onchange && i.onchange());
     }
 
-    function addRow() {
-      const tbody = document.getElementById('salesBody');
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><input type='text' placeholder='Name'></td>
-        <td><input type='text' placeholder='Mobile'></td>
-        ${Array(8).fill(`<td><input type='number' min='0' onchange='calcTotal(this)'></td>`).join('')}
-        <td><input type='number' min='0' onchange='calcTotal(this)'></td>
-        <td><input type='number' min='0'></td>
-        <td><button class='edit' onclick='editRow(this)'>✏️ Edit</button></td>
-        <td><button class='send' onclick='sendWhatsApp(this)'>📤 Send</button></td>
-        <td><button class='delete' onclick='confirmDelete(this)'>❌</button></td>`;
-      tbody.appendChild(row);
-    }
+    function addRow() { const tbody = document.getElementById('salesBody'); const row = document.createElement('tr'); row.innerHTML = `\n        <td><input type='text' placeholder='Name'></td>\n        <td><input class='mobile-input' type='text' placeholder='Mobile'></td>\n        ${Array(8).fill(`<td><input type='number' min='0' onchange='calcTotal(this)'></td>`).join('')}\n        <td><input class='paid-input' type='number' min='0' readonly></td>\n        <td><input class='due-input' type='number' min='0'></td>\n        <td><button class='edit' onclick='editRow(this)'>✏️ Edit</button></td>\n        <td><button class='send' onclick='sendWhatsApp(this)'>📤 Send</button></td>\n        <td><button class='delete' onclick='confirmDelete(this)'>❌</button></td>`; tbody.appendChild(row); }
 
-    function editRow(btn) {
-      currentEditingRow = btn.parentElement.parentElement;
-      const currentPrices = customPrices.get(currentEditingRow) || prices;
-      for (const key in prices) document.getElementById('p_' + key).value = currentPrices[key];
-      document.getElementById('priceModal').style.display = 'block';
-    }
-
-    function saveCustomPrices() {
-      if (!currentEditingRow) return;
-      const newPrices = {};
-      for (const key in prices) newPrices[key] = parseFloat(document.getElementById('p_' + key).value) || prices[key];
-      customPrices.set(currentEditingRow, newPrices);
-      document.getElementById('priceModal').style.display = 'none';
-      calcTotal(currentEditingRow.querySelector('input[type="number"]'));
-    }
-
+    function editRow(btn) { currentEditingRow = btn.parentElement.parentElement; const currentPrices = customPrices.get(currentEditingRow) || prices; for (const key in prices) document.getElementById('p_' + key).value = currentPrices[key]; document.getElementById('priceModal').style.display = 'block'; }
+    function saveCustomPrices() { if (!currentEditingRow) return; const newPrices = {}; for (const key in prices) newPrices[key] = parseFloat(document.getElementById('p_' + key).value) || prices[key]; customPrices.set(currentEditingRow, newPrices); document.getElementById('priceModal').style.display = 'none'; calcTotal(currentEditingRow.querySelector('input[type="number"]')); }
     function closeModal() { document.getElementById('priceModal').style.display = 'none'; }
 
-    function calcTotal(el) {
-      const row = el.parentElement.parentElement;
-      const rowPrices = customPrices.get(row) || prices;
-      const inputs = Array.from(row.querySelectorAll('input'));
-      const qtys = inputs.slice(2, 10).map(i => parseFloat(i.value) || 0);
-      const total = qtys[0]*rowPrices.TM500 + qtys[1]*rowPrices.S_Milk + qtys[2]*rowPrices.S_Curd + qtys[3]*rowPrices.B_Curd + qtys[4]*rowPrices.H500 + qtys[5]*rowPrices.FCM500 + qtys[6]*rowPrices.FCM1L + qtys[7]*rowPrices.SM1L;
-      const paid = parseFloat(inputs[10].value || 0);
-      const dueInput = inputs[11];
-      if (dueInput) dueInput.value = (total - paid).toFixed(2);
-      saveCurrentDate();
-      updateTotals();
-    }
+    function calcTotal(el) { const row = el.parentElement.parentElement; const rowPrices = customPrices.get(row) || prices; const inputs = Array.from(row.querySelectorAll('input')); const qtys = inputs.slice(2, 10).map(i => parseFloat(i.value) || 0); const total = qtys[0]*rowPrices.TM500 + qtys[1]*rowPrices.S_Milk + qtys[2]*rowPrices.S_Curd + qtys[3]*rowPrices.B_Curd + qtys[4]*rowPrices.H500 + qtys[5]*rowPrices.FCM500 + qtys[6]*rowPrices.FCM1L + qtys[7]*rowPrices.SM1L; const paidInput = row.querySelector('.paid-input'); const dueInput = row.querySelector('.due-input'); if (paidInput) paidInput.value = total.toFixed(2); if (dueInput && dueInput.value==='') dueInput.value = '0.00'; saveCurrentDate(); updateTotals(); }
 
-    function updateTotals() {
-      const totals = { TM500: 0, S_Milk: 0, S_Curd: 0, B_Curd: 0, H500: 0, FCM500: 0, FCM1L: 0, SM1L: 0, totalAmount: 0 };
-      document.querySelectorAll('#salesBody tr').forEach(row => {
-        const inputs = Array.from(row.querySelectorAll('input'));
-        const qtys = inputs.slice(2, 10).map(i => parseFloat(i.value) || 0);
-        totals.TM500 += qtys[0];
-        totals.S_Milk += qtys[1];
-        totals.S_Curd += qtys[2];
-        totals.B_Curd += qtys[3];
-        totals.H500 += qtys[4];
-        totals.FCM500 += qtys[5];
-        totals.FCM1L += qtys[6];
-        totals.SM1L += qtys[7];
-        const rowPrices = customPrices.get(row) || prices;
-        totals.totalAmount += qtys[0]*rowPrices.TM500 + qtys[1]*rowPrices.S_Milk + qtys[2]*rowPrices.S_Curd + qtys[3]*rowPrices.B_Curd + qtys[4]*rowPrices.H500 + qtys[5]*rowPrices.FCM500 + qtys[6]*rowPrices.FCM1L + qtys[7]*rowPrices.SM1L;
-      });
-      document.getElementById('t_TM500').innerText = totals.TM500.toFixed(1) + 'L';
-      document.getElementById('t_S_Milk').innerText = totals.S_Milk.toFixed(1) + 'L';
-      document.getElementById('t_S_Curd').innerText = totals.S_Curd.toFixed(1) + 'L';
-      document.getElementById('t_B_Curd').innerText = totals.B_Curd.toFixed(1) + 'L';
-      document.getElementById('t_H500').innerText = totals.H500.toFixed(1) + 'L';
-      document.getElementById('t_FCM500').innerText = totals.FCM500.toFixed(1) + 'L';
-      document.getElementById('t_FCM1L').innerText = totals.FCM1L.toFixed(1) + 'L';
-      document.getElementById('t_SM1L').innerText = totals.SM1L.toFixed(1) + 'L';
-      document.getElementById('totalDisplay').innerText = 'Total: ₹' + totals.totalAmount.toFixed(2);
-    }
+    function updateTotals() { const totals = { TM500: 0, S_Milk: 0, S_Curd: 0, B_Curd: 0, H500: 0, FCM500: 0, FCM1L: 0, SM1L: 0, totalAmount: 0 }; document.querySelectorAll('#salesBody tr').forEach(row => { const inputs = Array.from(row.querySelectorAll('input')); const qtys = inputs.slice(2, 10).map(i => parseFloat(i.value) || 0); totals.TM500 += qtys[0]; totals.S_Milk += qtys[1]; totals.S_Curd += qtys[2]; totals.B_Curd += qtys[3]; totals.H500 += qtys[4]; totals.FCM500 += qtys[5]; totals.FCM1L += qtys[6]; totals.SM1L += qtys[7]; const rowPrices = customPrices.get(row) || prices; totals.totalAmount += qtys[0]*rowPrices.TM500 + qtys[1]*rowPrices.S_Milk + qtys[2]*rowPrices.S_Curd + qtys[3]*rowPrices.B_Curd + qtys[4]*rowPrices.H500 + qtys[5]*rowPrices.FCM500 + qtys[6]*rowPrices.FCM1L + qtys[7]*rowPrices.SM1L; }); document.getElementById('t_TM500').innerText = totals.TM500.toFixed(1) + 'L'; document.getElementById('t_S_Milk').innerText = totals.S_Milk.toFixed(1) + 'L'; document.getElementById('t_S_Curd').innerText = totals.S_Curd.toFixed(1) + 'L'; document.getElementById('t_B_Curd').innerText = totals.B_Curd.toFixed(1) + 'L'; document.getElementById('t_H500').innerText = totals.H500.toFixed(1) + 'L'; document.getElementById('t_FCM500').innerText = totals.FCM500.toFixed(1) + 'L'; document.getElementById('t_FCM1L').innerText = totals.FCM1L.toFixed(1) + 'L'; document.getElementById('t_SM1L').innerText = totals.SM1L.toFixed(1) + 'L'; document.getElementById('totalDisplay').innerText = 'Total: ₹' + totals.totalAmount.toFixed(2); document.getElementById('grandTotal').innerText = 'Grand Total: ₹' + totals.totalAmount.toFixed(2); }
 
-    function sendWhatsApp(btn) {
-      const row = btn.parentElement.parentElement;
-      const inputs = Array.from(row.querySelectorAll('input'));
-      const name = inputs[0].value || 'Customer';
-      const mobile = inputs[1].value.replace(/\D/g, '');
-      const paid = inputs[10].value || 0;
-      const due = inputs[11].value || 0;
-      if (!mobile) return alert('Enter mobile number to send invoice.');
-      const date = document.getElementById('dateField').value;
-      const message = `Hi ${name},%0AHere is your bill for ${date}.%0APaid: ₹${paid}%0ADue: ₹${due}`;
-      window.open(`https://wa.me/${mobile}?text=${message}`, '_blank');
-    }
+    function openPrintView(){
+      // Build printable HTML
+      const date = document.getElementById('dateField').value || '';
+      let html = `<html><head><title>Invoice - ${date}</title><style>body{font-family:Arial;padding:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;text-align:center}</style></head><body>`;html += `<h2>Daily Sales - ${date}</h2>`;
+  html += `<table><thead>${document.querySelector('#salesTable thead').innerHTML}</thead><tbody>`;
+  document.querySelectorAll('#salesBody tr').forEach(r=>{
+    html += '<tr>' + Array.from(r.querySelectorAll('input')).slice(0,12).map(i=>`<td>${i.value || ''}</td>`).join('') + '</tr>';
+  });
+  html += `</tbody></table><h3>${document.getElementById('grandTotal').innerText}</h3></body></html>`;
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>{ w.print(); },300);
+}
 
-    function confirmDelete(btn) {
-      if (confirm('Are you sure you want to delete this customer entry?')) {
-        btn.parentElement.parentElement.remove();
-        saveCurrentDate();
-        updateTotals();
-      }
-    }
+function sendWhatsApp(btn) { const row = btn.parentElement.parentElement; const inputs = Array.from(row.querySelectorAll('input')); const name = inputs[0].value || 'Customer'; const mobile = inputs[1].value.replace(/\D/g, ''); const paid = inputs[10].value || 0; const due = inputs[11].value || 0; if (!mobile) return alert('Enter mobile number to send invoice.'); const date = document.getElementById('dateField').value; const message = `Hi ${name},%0AHere is your bill for ${date}.%0APaid: ₹${paid}%0ADue: ₹${due}`; window.open(`https://wa.me/${mobile}?text=${message}`, '_blank'); }
 
-    function updateDate() {
-      const date = document.getElementById('dateField').value;
-      document.querySelector('h1').innerText = `🧾 Daily Retail Sales Tracker – ${date}`;
-      loadDate(date);
-    }
+function confirmDelete(btn) { if (confirm('Are you sure you want to delete this customer entry?')) { btn.parentElement.parentElement.remove(); saveCurrentDate(); updateTotals(); } }
 
-    window.addEventListener('beforeunload', saveCurrentDate);
-    window.addEventListener('load', () => {
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById('dateField').value = today;
-      updateDate();
-    });
-  </script></body>
+function updateDate() { const date = document.getElementById('dateField').value; document.querySelector('h1').innerText = `🧾 Daily Retail Sales Tracker – ${date}`; loadDate(date); }
+
+window.addEventListener('beforeunload', saveCurrentDate);
+window.addEventListener('load', () => { const today = new Date().toISOString().slice(0, 10); document.getElementById('dateField').value = today; updateDate(); });
+
+  </script>
+</body>
 </html>
