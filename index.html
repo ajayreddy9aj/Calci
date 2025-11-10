@@ -14,6 +14,9 @@
     .send { background: #22c55e; color: white; }
     .delete { background: #ef4444; color: white; }
     input[type='number'], input[type='text'] { width: 70px; text-align: center; }
+    #priceModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border:1px solid #ccc; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
+    #priceModal input { width:80px; }
+    #priceModal button { margin-top:10px; }
   </style>
 </head>
 <body>
@@ -41,9 +44,24 @@
     </thead>
     <tbody id="salesBody"></tbody>
   </table>
-  <button onclick="addRow()">➕ Add Customer</button>  <script>
+  <button onclick="addRow()">➕ Add Customer</button>  <div id="priceModal">
+    <h3>Edit Prices for Customer</h3>
+    <table>
+      <tr><td>TM500:</td><td><input type="number" id="p_TM500" /></td></tr>
+      <tr><td>S Milk:</td><td><input type="number" id="p_S_Milk" /></td></tr>
+      <tr><td>S Curd:</td><td><input type="number" id="p_S_Curd" /></td></tr>
+      <tr><td>B Curd:</td><td><input type="number" id="p_B_Curd" /></td></tr>
+      <tr><td>H500:</td><td><input type="number" id="p_H500" /></td></tr>
+      <tr><td>FCM500:</td><td><input type="number" id="p_FCM500" /></td></tr>
+      <tr><td>FCM1L:</td><td><input type="number" id="p_FCM1L" /></td></tr>
+      <tr><td>SM1L:</td><td><input type="number" id="p_SM1L" /></td></tr>
+    </table>
+    <button onclick="saveCustomPrices()">Save</button>
+    <button onclick="closeModal()">Cancel</button>
+  </div>  <script>
     const prices = { TM500: 56, S_Milk: 45, S_Curd: 45, B_Curd: 68, H500: 86, FCM500: 77, FCM1L: 72, SM1L: 66 };
     const STORAGE_KEY = 'daily_retail_sales_data_v1';
+    const customPrices = new WeakMap(); // store custom prices per row
 
     function loadAllData() {
       try {
@@ -110,18 +128,43 @@
       tbody.appendChild(row);
     }
 
+    let currentEditingRow = null;
+
+    function editRow(btn) {
+      currentEditingRow = btn.parentElement.parentElement;
+      const currentPrices = customPrices.get(currentEditingRow) || prices;
+      for (const key in prices) {
+        document.getElementById('p_' + key).value = currentPrices[key];
+      }
+      document.getElementById('priceModal').style.display = 'block';
+    }
+
+    function saveCustomPrices() {
+      if (!currentEditingRow) return;
+      const newPrices = {};
+      for (const key in prices) {
+        newPrices[key] = parseFloat(document.getElementById('p_' + key).value) || prices[key];
+      }
+      customPrices.set(currentEditingRow, newPrices);
+      document.getElementById('priceModal').style.display = 'none';
+      calcTotal(currentEditingRow.querySelector('input[type="number"]'));
+    }
+
+    function closeModal() {
+      document.getElementById('priceModal').style.display = 'none';
+    }
+
     function calcTotal(el) {
       const row = el.parentElement.parentElement;
+      const rowPrices = customPrices.get(row) || prices;
       const inputs = Array.from(row.querySelectorAll('input'));
       const qtys = inputs.slice(2, 10).map(i => parseFloat(i.value) || 0);
-      const total = qtys[0]*prices.TM500 + qtys[1]*prices.S_Milk + qtys[2]*prices.S_Curd + qtys[3]*prices.B_Curd + qtys[4]*prices.H500 + qtys[5]*prices.FCM500 + qtys[6]*prices.FCM1L + qtys[7]*prices.SM1L;
+      const total = qtys[0]*rowPrices.TM500 + qtys[1]*rowPrices.S_Milk + qtys[2]*rowPrices.S_Curd + qtys[3]*rowPrices.B_Curd + qtys[4]*rowPrices.H500 + qtys[5]*rowPrices.FCM500 + qtys[6]*rowPrices.FCM1L + qtys[7]*rowPrices.SM1L;
       const paid = parseFloat(inputs[10].value || 0);
       const dueInput = inputs[11];
       if (dueInput) dueInput.value = (total - paid).toFixed(2);
       saveCurrentDate();
     }
-
-    function editRow(btn) { btn.parentElement.parentElement.querySelectorAll('input').forEach(i => i.focus()); }
 
     function sendWhatsApp(btn) {
       const row = btn.parentElement.parentElement;
