@@ -1,124 +1,165 @@
 <!doctype html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Daily Retail Sales Tracker</title>
+<title>Retail Tracker</title>
 <style>
-  :root{ --accent:#06b6d4; --ok:#16a34a; --danger:#ef4444; --muted:#6b7280; --bg:#ffffff; --panel:#f8fafc; --border:#e6edf3 }
-  html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,Arial,Helvetica,sans-serif;color:#0f172a}
-  .wrap{max-width:1200px;margin:14px auto;padding:12px}
-  header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  h1{margin:0;font-size:20px}
-  .top-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-  .chip{background:var(--panel);border:1px solid var(--border);padding:6px 10px;border-radius:8px;font-weight:600}
-  .controls{margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  button{background:var(--panel);border:1px solid var(--border);padding:8px 10px;border-radius:8px;cursor:pointer}
-  button.primary{background:var(--accent);color:white;border:none}
-  button.positive{background:var(--ok);color:white;border:none}
-  button.danger{background:var(--danger);color:white;border:none}/* Table layout */ .table-wrap{overflow:auto;margin-top:12px;position:relative} table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed} thead th{background:#f1f5f9;padding:8px;border:1px solid var(--border);font-size:12px} tbody td{padding:6px;border:1px solid var(--border);font-size:13px;text-align:center;background:white}
+  :root{
+    --accent:#06b6d4; --ok:#16a34a; --danger:#ef4444;
+    --muted:#6b7280; --bg:#fff; --panel:#f8fafc; --border:#e6edf3;
+  }
+  body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:#0f172a}
+  .wrap{max-width:1200px;margin:12px auto;padding:12px}
+  header{display:flex;align-items:center;gap:12px}
+  h1{margin:0;font-size:18px}
+  .top-right{margin-left:auto}
+  .chip{background:var(--panel);border:1px solid var(--border);padding:6px 10px;border-radius:8px}
+  .controls{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  button{padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);cursor:pointer}
+  button.primary{background:var(--accent);color:#fff;border:none}
+  button.positive{background:var(--ok);color:#fff;border:none}
+  button.danger{background:var(--danger);color:#fff;border:none}
 
-/* sticky first two columns / thead th.sticky-left, tbody td.sticky-left{position:sticky;left:0;background:#fff;z-index:5} thead th.sticky-left-2, tbody td.sticky-left-2{position:sticky;left:220px;background:#fff;z-index:5} / add a subtle box-shadow on sticky to separate */ tbody td.sticky-left{box-shadow:2px 0 3px rgba(0,0,0,0.04)} tbody td.sticky-left-2{box-shadow:2px 0 3px rgba(0,0,0,0.03)}
+  .table-wrap{overflow:auto;margin-top:12px;position:relative}
+  table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+  thead th{background:#f1f5f9;padding:8px;border:1px solid var(--border);font-size:12px;white-space:nowrap}
+  tbody td{padding:6px;border:1px solid var(--border);font-size:13px;text-align:center;background:#fff}
+  td.left{text-align:left;padding-left:8px}
 
-input[type="number"], input[type="text"]{padding:6px;border-radius:6px;border:1px solid var(--border);text-align:center} /* product input small (2 digits) / input.prod{width:36px} / name and mobile wider */ input.name{width:220px;text-align:left;padding-left:8px} input.mobile{width:160px}
+  /* sticky first two columns */
+  .sticky-left{position:sticky;left:0;background:#fff;z-index:5}
+  .sticky-left-2{position:sticky;left:220px;background:#fff;z-index:5}
 
-td.left{text-align:left;padding-left:10px} .actions button{margin:0 4px;padding:6px 10px} .totals-row th{background:#fbfdff} .summary-row{display:flex;gap:12px;align-items:center;margin-top:8px} @media (max-width:700px){ input.name{width:160px} input.mobile{width:120px} input.prod{width:34px} }
+  /* inputs sizing */
+  input[type="text"]{padding:6px;border:1px solid var(--border);border-radius:6px}
+  input.name{width:210px}
+  input.mobile{width:160px}
+  input.prod{width:40px;text-align:center}
+  input.paid, input.due{width:90px;text-align:center}
 
-/* modal */ .modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;z-index:40} .modal{background:white;padding:16px;border-radius:10px;min-width:300px;box-shadow:0 10px 30px rgba(15,23,42,0.12)} .modal table td{padding:6px} .right-muted{color:var(--muted);font-size:12px} </style>
+  .actions button{padding:6px 10px}
 
+  /* modal */
+  .modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;padding:16px;border-radius:10px;min-width:320px;box-shadow:0 10px 30px rgba(15,23,42,0.12)}
+  .modal table td{padding:6px}
+  .right-muted{color:var(--muted);font-size:12px}
+
+  @media (max-width:700px){
+    input.name{width:150px} input.mobile{width:110px} input.prod{width:36px}
+    .sticky-left-2{left:160px}
+  }
+</style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>Daily Retail Sales Tracker</h1>
-    <div class="top-right">
-      <div id="grandTotal" class="chip">Grand Total: ₹0</div>
+  <div class="wrap">
+    <header>
+      <h1>Daily Retail Sales Tracker</h1>
+      <div class="top-right"><div id="grandTotal" class="chip">Grand Total: ₹0</div></div>
+    </header>
+
+    <div style="margin-top:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <label>Date: <input id="dateField" type="date"></label>
+      <div class="controls">
+        <button id="addRowBtn">➕ Add Customer</button>
+        <button id="saveBtn" class="primary">💾 Save</button>
+        <button id="printBtn">🖨️ Print / PDF</button>
+      </div>
     </div>
-  </header>  <div style="margin-top:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-    <label>Date: <input type="date" id="dateField"></label>
-    <div class="controls">
-      <button id="addRowBtn">➕ Add Customer</button>
-      <button id="saveBtn" class="primary">💾 Save</button>
-      <button id="printBtn">🖨️ Print / PDF</button>
-    </div>
-  </div>  <div class="table-wrap">
-    <table id="salesTable">
-      <thead>
-        <tr class="totals-row">
-          <th class="sticky-left" style="min-width:220px">Totals</th>
-          <th class="sticky-left-2" style="min-width:160px">-</th>
-          <th id="t_TM500">0L</th>
-          <th id="t_S_Milk">0L</th>
-          <th id="t_S_Curd">0L</th>
-          <th id="t_B_Curd">0L</th>
-          <th id="t_H500">0L</th>
-          <th id="t_FCM500">0L</th>
-          <th id="t_FCM1L">0L</th>
-          <th id="t_SM1L">0L</th>
-          <th colspan="5"></th>
-        </tr>
-        <tr>
-          <th class="sticky-left left">Customer Name</th>
-          <th class="sticky-left-2">Mobile</th>
-          <th>TM500 <div class="right-muted">₹56/L</div></th>
-          <th>S Milk <div class="right-muted">₹45/L</div></th>
-          <th>S Curd <div class="right-muted">₹45/L</div></th>
-          <th>B Curd <div class="right-muted">₹68/L</div></th>
-          <th>H500 <div class="right-muted">₹86/L</div></th>
-          <th>FCM500 <div class="right-muted">₹77/L</div></th>
-          <th>FCM1L <div class="right-muted">₹72/L</div></th>
-          <th>SM1L <div class="right-muted">₹66/L</div></th>
-          <th>Paid (₹)</th>
-          <th>Due (₹)</th>
-          <th style="min-width:90px">Edit</th>
-          <th style="min-width:90px">Send</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody id="salesBody"></tbody>
-    </table>
-  </div>  <div style="margin-top:10px" class="summary-row">
-    <div class="right-muted">Tip: Edit prices per customer → Edit button</div>
-  </div>
-</div><!-- Price modal --><div id="modal" class="modal-back">
-  <div class="modal">
-    <h3 style="margin:0 0 8px 0">Edit Prices (this customer)</h3>
-    <table>
-      <tr><td>TM500:</td><td><input id="p_TM500" type="number" /></td></tr>
-      <tr><td>S Milk:</td><td><input id="p_S_Milk" type="number" /></td></tr>
-      <tr><td>S Curd:</td><td><input id="p_S_Curd" type="number" /></td></tr>
-      <tr><td>B Curd:</td><td><input id="p_B_Curd" type="number" /></td></tr>
-      <tr><td>H500:</td><td><input id="p_H500" type="number" /></td></tr>
-      <tr><td>FCM500:</td><td><input id="p_FCM500" type="number" /></td></tr>
-      <tr><td>FCM1L:</td><td><input id="p_FCM1L" type="number" /></td></tr>
-      <tr><td>SM1L:</td><td><input id="p_SM1L" type="number" /></td></tr>
-    </table>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
-      <button id="savePrices" class="primary">Save</button>
-      <button id="cancelPrices">Cancel</button>
+
+    <div class="table-wrap">
+      <table id="salesTable">
+        <thead>
+          <tr class="totals-row">
+            <th class="sticky-left" style="min-width:220px">Totals</th>
+            <th class="sticky-left-2" style="min-width:160px">-</th>
+            <th id="t_TM500">0L</th>
+            <th id="t_S_Milk">0L</th>
+            <th id="t_S_Curd">0L</th>
+            <th id="t_B_Curd">0L</th>
+            <th id="t_H500">0L</th>
+            <th id="t_FCM500">0L</th>
+            <th id="t_FCM1L">0L</th>
+            <th id="t_SM1L">0L</th>
+            <th colspan="5"></th>
+          </tr>
+          <tr>
+            <th class="sticky-left left">Customer Name</th>
+            <th class="sticky-left-2">Mobile</th>
+            <th>TM500 <div class="right-muted">₹56/L</div></th>
+            <th>S Milk <div class="right-muted">₹45/L</div></th>
+            <th>S Curd <div class="right-muted">₹45/L</div></th>
+            <th>B Curd <div class="right-muted">₹68/L</div></th>
+            <th>H500 <div class="right-muted">₹86/L</div></th>
+            <th>FCM500 <div class="right-muted">₹77/L</div></th>
+            <th>FCM1L <div class="right-muted">₹72/L</div></th>
+            <th>SM1L <div class="right-muted">₹66/L</div></th>
+            <th>Paid (₹)</th>
+            <th>Due (₹)</th>
+            <th style="min-width:90px">Edit</th>
+            <th style="min-width:90px">Send</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="salesBody"></tbody>
+      </table>
     </div>
   </div>
-</div><script>
-/* ====== CONFIG ====== */
-const DEFAULT_PRICES = { TM500:56, S_Milk:45, S_Curd:45, B_Curd:68, H500:86, FCM500:77, FCM1L:72, SM1L:66 };
-const STORAGE_KEY = 'retail_daily_v2';
-/* ====== HELPERS ====== */
-function qs(sel){return document.querySelector(sel)}
-function qsa(sel){return Array.from(document.querySelectorAll(sel))}
-function fmt(n){ return Number(n).toFixed(2) }
-function safeNum(v){ const x = parseFloat(v); return isNaN(x)?0:x }
-/* ====== DOM ====== */
-const dateField = qs('#dateField'); const salesBody = qs('#salesBody'); const addRowBtn = qs('#addRowBtn');
-const saveBtn = qs('#saveBtn'); const printBtn = qs('#printBtn'); const grandTotalEl = qs('#grandTotal');
-const modalBack = qs('#modal'); const savePricesBtn = qs('#savePrices'); const cancelPricesBtn = qs('#cancelPrices');
-const totalCells = { TM500:qs('#t_TM500'), S_Milk:qs('#t_S_Milk'), S_Curd:qs('#t_S_Curd'), B_Curd:qs('#t_B_Curd'), H500:qs('#t_H500'), FCM500:qs('#t_FCM500'), FCM1L:qs('#t_FCM1L'), SM1L:qs('#t_SM1L') };
-/* ====== STORAGE ====== */
-function loadAll(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') }catch(e){return{}} }
+
+  <!-- modal -->
+  <div id="modal" class="modal-back">
+    <div class="modal">
+      <h3 style="margin:0 0 8px 0">Edit Prices (this customer)</h3>
+      <table>
+        <tr><td>TM500:</td><td><input id="p_TM500" type="number"></td></tr>
+        <tr><td>S Milk:</td><td><input id="p_S_Milk" type="number"></td></tr>
+        <tr><td>S Curd:</td><td><input id="p_S_Curd" type="number"></td></tr>
+        <tr><td>B Curd:</td><td><input id="p_B_Curd" type="number"></td></tr>
+        <tr><td>H500:</td><td><input id="p_H500" type="number"></td></tr>
+        <tr><td>FCM500:</td><td><input id="p_FCM500" type="number"></td></tr>
+        <tr><td>FCM1L:</td><td><input id="p_FCM1L" type="number"></td></tr>
+        <tr><td>SM1L:</td><td><input id="p_SM1L" type="number"></td></tr>
+      </table>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+        <button id="savePrices" class="primary">Save</button>
+        <button id="cancelPrices">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* Config */
+const DEFAULT_PRICES = {TM500:56,S_Milk:45,S_Curd:45,B_Curd:68,H500:86,FCM500:77,FCM1L:72,SM1L:66};
+const STORAGE_KEY = 'retail_tracker_v1';
+
+/* Helpers */
+const qs = s=>document.querySelector(s);
+const qsa = s=>Array.from(document.querySelectorAll(s));
+const safeNum = v=>{const x=parseFloat(v);return isNaN(x)?0:x};
+const fmt = n=>Number(n).toFixed(2);
+
+/* Elements */
+const dateField = qs('#dateField'), salesBody = qs('#salesBody');
+const addRowBtn = qs('#addRowBtn'), saveBtn = qs('#saveBtn'), printBtn = qs('#printBtn');
+const grandTotalEl = qs('#grandTotal');
+const modalBack = qs('#modal'), savePricesBtn = qs('#savePrices'), cancelPricesBtn = qs('#cancelPrices');
+const totalCells = {
+  TM500:qs('#t_TM500'), S_Milk:qs('#t_S_Milk'), S_Curd:qs('#t_S_Curd'),
+  B_Curd:qs('#t_B_Curd'), H500:qs('#t_H500'), FCM500:qs('#t_FCM500'),
+  FCM1L:qs('#t_FCM1L'), SM1L:qs('#t_SM1L')
+};
+
+/* Storage */
+function loadAll(){ try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}catch(e){return{}}}
 function saveAll(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)) }
-/* ====== Row creation & data model ====== */
-const priceMap = new WeakMap(); let currentEditingRow = null;
-function createEmptyRow(){ 
+
+/* Data helpers */
+const priceMap = new WeakMap(); // row -> custom prices
+let currentEditingRow = null;
+
+/* Create row */
+function createEmptyRow(){
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td class="left sticky-left"><input class="name" type="text" placeholder="Name"></td>
@@ -137,26 +178,30 @@ function createEmptyRow(){
     <td class="actions"><button class="send">Send</button></td>
     <td class="actions"><button class="del">Del</button></td>
   `;
-  // attach events
-  tr.querySelectorAll('input[type="number"]').forEach(i=> i.addEventListener('input', ()=> onQtyChange(tr)) );
+  // bind numeric inputs
+  tr.querySelectorAll('input[type="number"]').forEach(inp=>{
+    inp.addEventListener('input', ()=> onQtyChange(tr));
+  });
   tr.querySelector('.edit').addEventListener('click', ()=> openEditModal(tr));
   tr.querySelector('.send').addEventListener('click', ()=> sendWhatsApp(tr));
   tr.querySelector('.del').addEventListener('click', ()=> confirmDelete(tr));
   return tr;
 }
-/* ====== Qty/change handlers ====== */
+
+/* Quantity / totals */
 function onQtyChange(row){
   const inputs = row.querySelectorAll('input');
   const qty = Array.from(inputs).slice(2,10).map(i=>safeNum(i.value));
   const prices = priceMap.get(row) || DEFAULT_PRICES;
   const total = qty[0]*prices.TM500 + qty[1]*prices.S_Milk + qty[2]*prices.S_Curd + qty[3]*prices.B_Curd
               + qty[4]*prices.H500 + qty[5]*prices.FCM500 + qty[6]*prices.FCM1L + qty[7]*prices.SM1L;
-  const paidInput = row.querySelector('.paid'); const dueInput = row.querySelector('.due');
+  const paidInput = row.querySelector('.paid');
+  const dueInput = row.querySelector('.due');
   paidInput.value = fmt(total);
   if(dueInput.value === '' || safeNum(dueInput.value) < 0) dueInput.value = '0.00';
   saveCurrentDate(); updateTotals();
 }
-/* ====== Totals ====== */
+
 function updateTotals(){
   const totals = {TM500:0,S_Milk:0,S_Curd:0,B_Curd:0,H500:0,FCM500:0,FCM1L:0,SM1L:0,amount:0};
   qsa('#salesBody tr').forEach(row=>{
@@ -178,20 +223,179 @@ function updateTotals(){
   totalCells.SM1L.textContent = totals.SM1L.toFixed(1) + 'L';
   grandTotalEl.textContent = 'Grand Total: ₹' + totals.amount.toFixed(2);
 }
-/* ====== Add/Remove rows ====== */
-addRowBtn.addEventListener('click', ()=>{ const r=createEmptyRow(); salesBody.appendChild(r); r.querySelector('input[type=text]').focus(); });
-function confirmDelete(row){ if(!confirm('Delete this customer entry?')) return; row.remove(); saveCurrentDate(); updateTotals(); }
-/* ====== Edit prices modal ====== */
-function openEditModal(row){ currentEditingRow = row; const p = priceMap.get(row) || DEFAULT_PRICES; qs('#p_TM500').value = p.TM500; qs('#p_S_Milk').value = p.S_Milk; qs('#p_S_Curd').value = p.S_Curd; qs('#p_B_Curd').value = p.B_Curd; qs('#p_H500').value = p.H500; qs('#p_FCM500').value = p.FCM500; qs('#p_FCM1L').value = p.FCM1L; qs('#p_SM1L').value = p.SM1L; modalBack.style.display = 'flex'; }
-cancelPricesBtn.addEventListener('click', ()=> { modalBack.style.display='none'; currentEditingRow=null; });
-savePricesBtn.addEventListener('click', ()=>{ if(!currentEditingRow) return; const newP = { TM500:safeNum(qs('#p_TM500').value||DEFAULT_PRICES.TM500), S_Milk:safeNum(qs('#p_S_Milk').value||DEFAULT_PRICES.S_Milk), S_Curd:safeNum(qs('#p_S_Curd').value||DEFAULT_PRICES.S_Curd), B_Curd:safeNum(qs('#p_B_Curd').value||DEFAULT_PRICES.B_Curd), H500:safeNum(qs('#p_H500').value||DEFAULT_PRICES.H500), FCM500:safeNum(qs('#p_FCM500').value||DEFAULT_PRICES.FCM500), FCM1L:safeNum(qs('#p_FCM1L').value||DEFAULT_PRICES.FCM1L), SM1L:safeNum(qs('#p_SM1L').value||DEFAULT_PRICES.SM1L) }; priceMap.set(currentEditingRow,newP); modalBack.style.display='none'; const firstNum = currentEditingRow.querySelector('input[type=number]'); if(firstNum) onQtyChange(currentEditingRow); currentEditingRow = null; });
-/* ====== WhatsApp invoice ====== */
-function sendWhatsApp(row){ const inputs = row.querySelectorAll('input'); const name = inputs[0].value || 'Customer'; let mobile = inputs[1].value.replace(/\D/g,''); if(!mobile){ alert('Enter mobile to send invoice'); return; } const qty = Array.from(inputs).slice(2,10).map(i=>safeNum(i.value)); const prices = priceMap.get(row) || DEFAULT_PRICES; const items = []; if(qty[0]) items.push(`TM500 ${qty[0]}L x ₹${prices.TM500}`); if(qty[1]) items.push(`S Milk ${qty[1]}L x ₹${prices.S_Milk}`); if(qty[2]) items.push(`S Curd ${qty[2]}L x ₹${prices.S_Curd}`); if(qty[3]) items.push(`B Curd ${qty[3]}L x ₹${prices.B_Curd}`); if(qty[4]) items.push(`H500 ${qty[4]}L x ₹${prices.H500}`); if(qty[5]) items.push(`FCM500 ${qty[5]}L x ₹${prices.FCM500}`); if(qty[6]) items.push(`FCM1L ${qty[6]}L x ₹${prices.FCM1L}`); if(qty[7]) items.push(`SM1L ${qty[7]}L x ₹${prices.SM1L}`); const total = safeNum(inputs[10].value); const due = safeNum(inputs[11].value); const date = dateField.value || ''; let message = `Hi ${name},%0AYour bill for ${date}:%0A`; if(items.length) message += items.join('%0A') + '%0A'; message += `Total: ₹${fmt(total)}%0APaid: ₹${fmt(total)}%0ADue: ₹${fmt(due)}`; window.open(`https://wa.me/${mobile}?text=${message}`,'_blank'); }
-/* ====== Save/load by date ====== */
-function saveCurrentDate(){ const date = dateField.value; if(!date) { alert('Please select date'); return; } const all = loadAll(); const rows = qsa('#salesBody tr').map(r=> Array.from(r.querySelectorAll('input')).map(i=>i.value) ); all[date] = rows; saveAll(all); const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices') || '{}'); priceStore[date] = qsa('#salesBody tr').map(r => priceMap.get(r) || null); localStorage.setItem(STORAGE_KEY + '_prices', JSON.stringify(priceStore)); saveBtn.textContent = 'Saved ✓'; setTimeout(()=> saveBtn.textContent = '💾 Save',800); }
-function loadDate(date){ const all = loadAll(); salesBody.innerHTML = ''; if(all[date] && all[date].length){ all[date].forEach(rowVals => { const tr = createEmptyRow(); const inputs = tr.querySelectorAll('input'); rowVals.forEach((v,i)=>{ if(inputs[i]) inputs[i].value = v }); salesBody.appendChild(tr); }); const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices') || '{}'); if(priceStore[date]){ const rows = qsa('#salesBody tr'); priceStore[date].forEach((p,i)=>{ if(p && rows[i]) priceMap.set(rows[i], p) }); } }else{ const keys = Object.keys(all).sort().reverse(); if(keys.length){ const last = all[keys[0]]; if(last && last.length){ last.forEach(rowVals => { const tr = createEmptyRow(); const inputs = tr.querySelectorAll('input'); rowVals.forEach((v,i)=>{ if(inputs[i]) inputs[i].value = v }); salesBody.appendChild(tr); }); const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices') || '{}'); if(priceStore[keys[0]]){ const rows = qsa('#salesBody tr'); priceStore[keys[0]].forEach((p,i)=>{ if(p && rows[i]) priceMap.set(rows[i], p) }); } } else { salesBody.appendChild(createEmptyRow()); } } qsa('#salesBody tr').forEach(tr=>{ tr.querySelectorAll('input[type=number]').forEach(el=> el.addEventListener('input', ()=> onQtyChange(tr)) ); tr.querySelector('.edit').addEventListener('click', ()=> openEditModal(tr)); tr.querySelector('.send').addEventListener('click', ()=> sendWhatsApp(tr)); tr.querySelector('.del').addEventListener('click', ()=> confirmDelete(tr)); onQtyChange(tr); }); updateTotals(); }
-/* ====== Print view ====== */
-function openPrintView(){ const date = dateField.value || ''; let html = `<html><head><title>Daily Sales - ${date}</title><style>body{font-family:Arial;padding:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;text-align:center}</style></head><body>`; html += `<h2>Daily Sales - ${date}</h2>`; html += `<table><thead>${qs('#salesTable thead').innerHTML}</thead><tbody>`; qsa('#salesBody tr').forEach(r=>{ const vals = Array.from(r.querySelectorAll('input')).slice(0,12).map(i=>i.value || ''); html += '<tr>' + vals.map(v=>`<td>${v}</td>`).join('') + '</tr>'; }); html += `</tbody></table><h3>${grandTotalEl.textContent}</h3></body></html>`; const w = window.open('','_blank'); w.document.write(html); w.document.close(); w.focus(); setTimeout(()=> w.print(), 300); }/* ====== INIT ====== */ function init(){ const today = new Date().toISOString().slice(0,10); dateField.value = today; loadDate(dateField.value); dateField.addEventListener('change', ()=> loadDate(dateField.value) ); saveBtn.addEventListener('click', saveCurrentDate); printBtn.addEventListener('click', openPrintView); setInterval(()=> saveCurrentDate(), 5000); if(qsa('#salesBody tr').length === 0) salesBody.appendChild(createEmptyRow()); updateTotals(); } init(); </script>
 
+/* Add / delete */
+addRowBtn.addEventListener('click', ()=> {
+  const r = createEmptyRow();
+  salesBody.appendChild(r);
+  r.querySelector('input[name] ?? r.querySelector("input[type=text]")?.focus();
+  // focus on name
+  const name = r.querySelector('input[type="text"]');
+  if(name) name.focus();
+});
+
+/* confirm delete */
+function confirmDelete(row){
+  if(!confirm('Delete this customer entry?')) return;
+  row.remove();
+  saveCurrentDate(); updateTotals();
+}
+
+/* Modal (edit per-row prices) */
+function openEditModal(row){
+  currentEditingRow = row;
+  const p = priceMap.get(row) || DEFAULT_PRICES;
+  qs('#p_TM500').value = p.TM500; qs('#p_S_Milk').value = p.S_Milk; qs('#p_S_Curd').value = p.S_Curd;
+  qs('#p_B_Curd').value = p.B_Curd; qs('#p_H500').value = p.H500; qs('#p_FCM500').value = p.FCM500;
+  qs('#p_FCM1L').value = p.FCM1L; qs('#p_SM1L').value = p.SM1L;
+  modalBack.style.display = 'flex';
+}
+cancelPricesBtn.addEventListener('click', ()=>{
+  modalBack.style.display = 'none';
+  currentEditingRow = null;
+});
+savePricesBtn.addEventListener('click', ()=>{
+  if(!currentEditingRow) return;
+  const newP = {
+    TM500: safeNum(qs('#p_TM500').value || DEFAULT_PRICES.TM500),
+    S_Milk: safeNum(qs('#p_S_Milk').value || DEFAULT_PRICES.S_Milk),
+    S_Curd: safeNum(qs('#p_S_Curd').value || DEFAULT_PRICES.S_Curd),
+    B_Curd: safeNum(qs('#p_B_Curd').value || DEFAULT_PRICES.B_Curd),
+    H500: safeNum(qs('#p_H500').value || DEFAULT_PRICES.H500),
+    FCM500: safeNum(qs('#p_FCM500').value || DEFAULT_PRICES.FCM500),
+    FCM1L: safeNum(qs('#p_FCM1L').value || DEFAULT_PRICES.FCM1L),
+    SM1L: safeNum(qs('#p_SM1L').value || DEFAULT_PRICES.SM1L)
+  };
+  priceMap.set(currentEditingRow, newP);
+  modalBack.style.display = 'none';
+  // recalc that row
+  onQtyChange(currentEditingRow);
+  currentEditingRow = null;
+});
+
+/* WhatsApp send */
+function sendWhatsApp(row){
+  const inputs = row.querySelectorAll('input');
+  const name = inputs[0].value || 'Customer';
+  let mobile = inputs[1].value.replace(/\D/g,'');
+  if(!mobile){ alert('Enter mobile to send invoice'); return; }
+  const qty = Array.from(inputs).slice(2,10).map(i=>safeNum(i.value));
+  const prices = priceMap.get(row) || DEFAULT_PRICES;
+  const items = [];
+  if(qty[0]) items.push(`TM500 ${qty[0]}L x ₹${prices.TM500}`);
+  if(qty[1]) items.push(`S Milk ${qty[1]}L x ₹${prices.S_Milk}`);
+  if(qty[2]) items.push(`S Curd ${qty[2]}L x ₹${prices.S_Curd}`);
+  if(qty[3]) items.push(`B Curd ${qty[3]}L x ₹${prices.B_Curd}`);
+  if(qty[4]) items.push(`H500 ${qty[4]}L x ₹${prices.H500}`);
+  if(qty[5]) items.push(`FCM500 ${qty[5]}L x ₹${prices.FCM500}`);
+  if(qty[6]) items.push(`FCM1L ${qty[6]}L x ₹${prices.FCM1L}`);
+  if(qty[7]) items.push(`SM1L ${qty[7]}L x ₹${prices.SM1L}`);
+  const total = safeNum(inputs[10].value);
+  const due = safeNum(inputs[11].value);
+  const date = dateField.value || '';
+  let message = `Hi ${name},%0AYour bill for ${date}:%0A`;
+  if(items.length) message += items.join('%0A') + '%0A';
+  message += `Total: ₹${fmt(total)}%0APaid: ₹${fmt(total)}%0ADue: ₹${fmt(due)}`;
+  window.open(`https://wa.me/${mobile}?text=${message}`, '_blank');
+}
+
+/* Save/load per date */
+function saveCurrentDate(){
+  const date = dateField.value;
+  if(!date){ alert('Pick a date first'); return; }
+  const all = loadAll();
+  const rows = qsa('#salesBody tr').map(r=> Array.from(r.querySelectorAll('input')).map(i=>i.value));
+  all[date] = rows;
+  saveAll(all);
+  // save price map
+  const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices')||'{}');
+  priceStore[date] = qsa('#salesBody tr').map(r=> priceMap.get(r) || null);
+  localStorage.setItem(STORAGE_KEY + '_prices', JSON.stringify(priceStore));
+  saveBtn.textContent = 'Saved ✓';
+  setTimeout(()=> saveBtn.textContent = '💾 Save',700);
+}
+
+function loadDate(date){
+  const all = loadAll();
+  salesBody.innerHTML = '';
+  if(all[date] && all[date].length){
+    all[date].forEach(rowVals=>{
+      const tr = createEmptyRow();
+      const inputs = tr.querySelectorAll('input');
+      rowVals.forEach((v,i)=>{ if(inputs[i]) inputs[i].value = v; });
+      salesBody.appendChild(tr);
+    });
+    // restore prices
+    const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices')||'{}');
+    if(priceStore[date]){
+      const rows = qsa('#salesBody tr');
+      priceStore[date].forEach((p,i)=>{ if(p && rows[i]) priceMap.set(rows[i], p) });
+    }
+  } else {
+    // load last known customers if any
+    const keys = Object.keys(all).sort().reverse();
+    if(keys.length){
+      const last = all[keys[0]];
+      if(last && last.length){
+        last.forEach(rowVals=>{
+          const tr = createEmptyRow();
+          const inputs = tr.querySelectorAll('input');
+          rowVals.forEach((v,i)=>{ if(inputs[i]) inputs[i].value = v; });
+          salesBody.appendChild(tr);
+        });
+        const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices')||'{}');
+        if(priceStore[keys[0]]){
+          const rows = qsa('#salesBody tr');
+          priceStore[keys[0]].forEach((p,i)=>{ if(p && rows[i]) priceMap.set(rows[i], p) });
+        }
+      } else {
+        salesBody.appendChild(createEmptyRow());
+      }
+    } else {
+      salesBody.appendChild(createEmptyRow());
+    }
+  }
+  // ensure events and recalc
+  qsa('#salesBody tr').forEach(tr=>{
+    tr.querySelectorAll('input[type="number"]').forEach(inp=> inp.addEventListener('input', ()=> onQtyChange(tr)));
+    tr.querySelector('.edit').addEventListener('click', ()=> openEditModal(tr));
+    tr.querySelector('.send').addEventListener('click', ()=> sendWhatsApp(tr));
+    tr.querySelector('.del').addEventListener('click', ()=> confirmDelete(tr));
+    onQtyChange(tr);
+  });
+  updateTotals();
+}
+
+/* Print */
+function openPrintView(){
+  const date = dateField.value || '';
+  let html = `<html><head><title>Daily Sales - ${date}</title><style>body{font-family:Arial;padding:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;text-align:center}</style></head><body>`;
+  html += `<h2>Daily Sales - ${date}</h2>`;
+  html += `<table><thead>${qs('#salesTable thead').innerHTML}</thead><tbody>`;
+  qsa('#salesBody tr').forEach(r=>{
+    const vals = Array.from(r.querySelectorAll('input')).slice(0,12).map(i=>i.value || '');
+    html += '<tr>' + vals.map(v=>`<td>${v}</td>`).join('') + '</tr>';
+  });
+  html += `</tbody></table><h3>${grandTotalEl.textContent}</h3></body></html>`;
+  const w = window.open('','_blank');
+  w.document.write(html); w.document.close(); w.focus();
+  setTimeout(()=> w.print(), 300);
+}
+
+/* Init */
+function init(){
+  const today = new Date().toISOString().slice(0,10);
+  dateField.value = today;
+  loadDate(dateField.value);
+  dateField.addEventListener('change', ()=> loadDate(dateField.value) );
+  addRowBtn.addEventListener('click', ()=> { const r=createEmptyRow(); salesBody.appendChild(r); r.querySelector('input[type="text"]').focus(); });
+  saveBtn.addEventListener('click', saveCurrentDate);
+  printBtn.addEventListener('click', openPrintView);
+  setInterval(()=> saveCurrentDate(), 5000);
+  if(qsa('#salesBody tr').length === 0) salesBody.appendChild(createEmptyRow());
+  updateTotals();
+}
+init();
+</script>
 </body>
 </html>
