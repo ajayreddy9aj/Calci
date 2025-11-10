@@ -33,17 +33,18 @@
   </style>
 </head>
 <body>
-  <h1>🧾 <span id="dateTitle">Daily Retail Sales Tracker</span> <span id="grandTotal">Grand Total: ₹0</span><span id="totalDisplay">Total: ₹0</span></h1>
+  <h1>🧾 <span id="dateTitle">Daily Retail Sales Tracker</span> <span id="grandTotal">Grand Total: ₹0</span></h1>
   <label><strong>Date:</strong> <input type="date" id="dateField" onchange="updateDate()" /></label>
   <div class="controls">
-    <button onclick="addRow()">➕ Add Customer</button>
-    <button onclick="saveCurrentDate()">💾 Save</button>
-    <button onclick="openPrintView()">🖨️ Print / PDF</button>
-  </div>  <table id="salesTable">
+    <button id="addBtn" onclick="addRow()">➕ Add Customer</button>
+    <button id="saveBtn" onclick="saveCurrentDate()">💾 Save</button>
+    <button id="printBtn" onclick="openPrintView()">🖨️ Print / PDF</button>
+  </div>  <div class="table-container" style="overflow:auto; margin-top:12px;">
+  <table id="salesTable">
     <thead>
       <tr class="totals-row">
-        <th>Totals</th>
-        <th>-</th>
+        <th style="min-width:80px">Totals</th>
+        <th style="min-width:40px">-</th>
         <th id="t_TM500">0L</th>
         <th id="t_S_Milk">0L</th>
         <th id="t_S_Curd">0L</th>
@@ -55,25 +56,26 @@
         <th colspan="5"></th>
       </tr>
       <tr>
-        <th>Customer Name</th>
-        <th>Mobile</th>
-        <th>TM500 <small>₹56/L</small></th>
-        <th>S Milk <small>₹45/L</small></th>
-        <th>S Curd <small>₹45/L</small></th>
-        <th>B Curd <small>₹68/L</small></th>
-        <th>H500 <small>₹86/L</small></th>
-        <th>FCM500 <small>₹77/L</small></th>
-        <th>FCM1L <small>₹72/L</small></th>
-        <th>SM1L <small>₹66/L</small></th>
-        <th>Paid (₹)</th>
-        <th>Due (₹)</th>
-        <th>Edit</th>
-        <th>Send</th>
-        <th>Delete</th>
+        <th style="min-width:120px">Customer Name</th>
+        <th style="min-width:130px">Mobile</th>
+        <th style="min-width:50px">TM500 <small>₹56/L</small></th>
+        <th style="min-width:50px">S Milk <small>₹45/L</small></th>
+        <th style="min-width:50px">S Curd <small>₹45/L</small></th>
+        <th style="min-width:50px">B Curd <small>₹68/L</small></th>
+        <th style="min-width:50px">H500 <small>₹86/L</small></th>
+        <th style="min-width:50px">FCM500 <small>₹77/L</small></th>
+        <th style="min-width:50px">FCM1L <small>₹72/L</small></th>
+        <th style="min-width:50px">SM1L <small>₹66/L</small></th>
+        <th style="min-width:80px">Paid (₹)</th>
+        <th style="min-width:80px">Due (₹)</th>
+        <th style="min-width:90px">Edit</th>
+        <th style="min-width:90px">Send</th>
+        <th style="min-width:70px">Delete</th>
       </tr>
     </thead>
     <tbody id="salesBody"></tbody>
-  </table>  <div id="priceModal">
+  </table>
+  </div>  <div id="priceModal">
     <h3>Edit Prices for Customer</h3>
     <table>
       <tr><td>TM500:</td><td><input type="number" id="p_TM500" /></td></tr>
@@ -85,8 +87,10 @@
       <tr><td>FCM1L:</td><td><input type="number" id="p_FCM1L" /></td></tr>
       <tr><td>SM1L:</td><td><input type="number" id="p_SM1L" /></td></tr>
     </table>
-    <button onclick="saveCustomPrices()">💾 Save</button>
-    <button onclick="closeModal()">❌ Cancel</button>
+    <div style="text-align:center">
+      <button onclick="saveCustomPrices()">💾 Save</button>
+      <button onclick="closeModal()">❌ Cancel</button>
+    </div>
   </div>  <script>
     const prices = { TM500: 56, S_Milk: 45, S_Curd: 45, B_Curd: 68, H500: 86, FCM500: 77, FCM1L: 72, SM1L: 66 };
     const STORAGE_KEY = 'daily_retail_sales_data_v1';
@@ -153,7 +157,8 @@ function updateDate() {
 }`; loadDate(date); }
 
 window.addEventListener('beforeunload', saveCurrentDate);
-window.addEventListener('load', () => { const today = new Date().toISOString().slice(0, 10); document.getElementById('dateField').value = today; updateDate(); });
+window.addEventListener('load', () => { const today = new Date().toISOString().slice(0, 10); document.getElementById('dateField').value = today; updateDate(); // ensure at least one row visible for quick entry
+  setTimeout(()=>{ if(document.getElementById('salesBody').rows.length===0) addRow(); }, 120); });
 
   </script>
 </body>
