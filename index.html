@@ -5,36 +5,52 @@
   <title>Daily Retail Sales Tracker</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f9fafb; }
-    h1 { text-align: center; }
+    h1 { text-align: center; position: relative; }
+    #totalDisplay { position: absolute; right: 20px; top: 0; font-size: 18px; color: #1e293b; background: #e2e8f0; padding: 6px 12px; border-radius: 6px; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; font-size: 14px; }
     th { background-color: #e2e8f0; }
-    button { padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer; }
-    .edit { background: #38bdf8; color: white; }
-    .send { background: #22c55e; color: white; }
+    button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .edit { background: #0ea5e9; color: white; width: 90px; }
+    .send { background: #16a34a; color: white; width: 90px; }
     .delete { background: #ef4444; color: white; }
-    input[type='number'], input[type='text'] { width: 70px; text-align: center; }
-    #priceModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border:1px solid #ccc; padding:20px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
+    input[type='number'], input[type='text'] { width: 55px; text-align: center; font-size: 13px; }
+    #priceModal { display:none; position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); background:white; border:1px solid #ccc; padding:25px; border-radius:12px; box-shadow:0 2px 20px rgba(0,0,0,0.4); width:320px; }
     #priceModal input { width:80px; }
     #priceModal button { margin-top:10px; }
+    #priceModal h3 { text-align:center; }
+    small { display:block; font-size:11px; color:#4b5563; }
+    .totals-row th { background:#f1f5f9; font-weight:bold; }
   </style>
 </head>
 <body>
-  <h1>🧾 Daily Retail Sales Tracker</h1>
-  <label><strong>Date:</strong> <input type="date" id="dateField" onchange="updateDate()" /></label>
-  <table id="salesTable">
+  <h1>🧾 Daily Retail Sales Tracker <span id="totalDisplay">Total: ₹0</span></h1>
+  <label><strong>Date:</strong> <input type="date" id="dateField" onchange="updateDate()" /></label>  <table id="salesTable">
     <thead>
+      <tr class="totals-row">
+        <th>Totals</th>
+        <th>-</th>
+        <th id="t_TM500">0L</th>
+        <th id="t_S_Milk">0L</th>
+        <th id="t_S_Curd">0L</th>
+        <th id="t_B_Curd">0L</th>
+        <th id="t_H500">0L</th>
+        <th id="t_FCM500">0L</th>
+        <th id="t_FCM1L">0L</th>
+        <th id="t_SM1L">0L</th>
+        <th colspan="5"></th>
+      </tr>
       <tr>
         <th>Customer Name</th>
         <th>Mobile</th>
-        <th>TM500</th>
-        <th>S Milk</th>
-        <th>S Curd</th>
-        <th>B Curd</th>
-        <th>H500</th>
-        <th>FCM500</th>
-        <th>FCM1L</th>
-        <th>SM1L</th>
+        <th>TM500 <small>₹56/L</small></th>
+        <th>S Milk <small>₹45/L</small></th>
+        <th>S Curd <small>₹45/L</small></th>
+        <th>B Curd <small>₹68/L</small></th>
+        <th>H500 <small>₹86/L</small></th>
+        <th>FCM500 <small>₹77/L</small></th>
+        <th>FCM1L <small>₹72/L</small></th>
+        <th>SM1L <small>₹66/L</small></th>
         <th>Paid (₹)</th>
         <th>Due (₹)</th>
         <th>Edit</th>
@@ -56,12 +72,13 @@
       <tr><td>FCM1L:</td><td><input type="number" id="p_FCM1L" /></td></tr>
       <tr><td>SM1L:</td><td><input type="number" id="p_SM1L" /></td></tr>
     </table>
-    <button onclick="saveCustomPrices()">Save</button>
-    <button onclick="closeModal()">Cancel</button>
+    <button onclick="saveCustomPrices()">💾 Save</button>
+    <button onclick="closeModal()">❌ Cancel</button>
   </div>  <script>
     const prices = { TM500: 56, S_Milk: 45, S_Curd: 45, B_Curd: 68, H500: 86, FCM500: 77, FCM1L: 72, SM1L: 66 };
     const STORAGE_KEY = 'daily_retail_sales_data_v1';
-    const customPrices = new WeakMap(); // store custom prices per row
+    const customPrices = new WeakMap();
+    let currentEditingRow = null;
 
     function loadAllData() {
       try {
@@ -80,6 +97,7 @@
       const all = loadAllData();
       all[date] = rows;
       saveAllData(all);
+      updateTotals();
     }
 
     function loadDate(date) {
@@ -94,6 +112,7 @@
           if (all[last] && all[last].length) all[last].forEach(cells => insertRowFromArray(cells));
         }
       }
+      updateTotals();
     }
 
     function insertRowFromArray(values) {
@@ -106,9 +125,9 @@
       for (let i = 0; i < 8; i++) row.innerHTML += `<td><input type='number' min='0' value='${values[idx++] || ''}' onchange='calcTotal(this)'></td>`;
       row.innerHTML += `<td><input type='number' min='0' value='${values[idx++] || ''}' onchange='calcTotal(this)'></td>`;
       row.innerHTML += `<td><input type='number' min='0' value='${values[idx++] || ''}'></td>`;
-      row.innerHTML += `<td><button class='edit' onclick='editRow(this)'>✏️</button></td>`;
-      row.innerHTML += `<td><button class='send' onclick='sendWhatsApp(this)'>📤</button></td>`;
-      row.innerHTML += `<td><button class='delete' onclick='deleteRow(this)'>❌</button></td>`;
+      row.innerHTML += `<td><button class='edit' onclick='editRow(this)'>✏️ Edit</button></td>`;
+      row.innerHTML += `<td><button class='send' onclick='sendWhatsApp(this)'>📤 Send</button></td>`;
+      row.innerHTML += `<td><button class='delete' onclick='confirmDelete(this)'>❌</button></td>`;
       tbody.appendChild(row);
       Array.from(row.querySelectorAll('input[type="number"]')).forEach(i => i.onchange && i.onchange());
     }
@@ -122,37 +141,29 @@
         ${Array(8).fill(`<td><input type='number' min='0' onchange='calcTotal(this)'></td>`).join('')}
         <td><input type='number' min='0' onchange='calcTotal(this)'></td>
         <td><input type='number' min='0'></td>
-        <td><button class='edit' onclick='editRow(this)'>✏️</button></td>
-        <td><button class='send' onclick='sendWhatsApp(this)'>📤</button></td>
-        <td><button class='delete' onclick='deleteRow(this)'>❌</button></td>`;
+        <td><button class='edit' onclick='editRow(this)'>✏️ Edit</button></td>
+        <td><button class='send' onclick='sendWhatsApp(this)'>📤 Send</button></td>
+        <td><button class='delete' onclick='confirmDelete(this)'>❌</button></td>`;
       tbody.appendChild(row);
     }
-
-    let currentEditingRow = null;
 
     function editRow(btn) {
       currentEditingRow = btn.parentElement.parentElement;
       const currentPrices = customPrices.get(currentEditingRow) || prices;
-      for (const key in prices) {
-        document.getElementById('p_' + key).value = currentPrices[key];
-      }
+      for (const key in prices) document.getElementById('p_' + key).value = currentPrices[key];
       document.getElementById('priceModal').style.display = 'block';
     }
 
     function saveCustomPrices() {
       if (!currentEditingRow) return;
       const newPrices = {};
-      for (const key in prices) {
-        newPrices[key] = parseFloat(document.getElementById('p_' + key).value) || prices[key];
-      }
+      for (const key in prices) newPrices[key] = parseFloat(document.getElementById('p_' + key).value) || prices[key];
       customPrices.set(currentEditingRow, newPrices);
       document.getElementById('priceModal').style.display = 'none';
       calcTotal(currentEditingRow.querySelector('input[type="number"]'));
     }
 
-    function closeModal() {
-      document.getElementById('priceModal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('priceModal').style.display = 'none'; }
 
     function calcTotal(el) {
       const row = el.parentElement.parentElement;
@@ -164,6 +175,34 @@
       const dueInput = inputs[11];
       if (dueInput) dueInput.value = (total - paid).toFixed(2);
       saveCurrentDate();
+      updateTotals();
+    }
+
+    function updateTotals() {
+      const totals = { TM500: 0, S_Milk: 0, S_Curd: 0, B_Curd: 0, H500: 0, FCM500: 0, FCM1L: 0, SM1L: 0, totalAmount: 0 };
+      document.querySelectorAll('#salesBody tr').forEach(row => {
+        const inputs = Array.from(row.querySelectorAll('input'));
+        const qtys = inputs.slice(2, 10).map(i => parseFloat(i.value) || 0);
+        totals.TM500 += qtys[0];
+        totals.S_Milk += qtys[1];
+        totals.S_Curd += qtys[2];
+        totals.B_Curd += qtys[3];
+        totals.H500 += qtys[4];
+        totals.FCM500 += qtys[5];
+        totals.FCM1L += qtys[6];
+        totals.SM1L += qtys[7];
+        const rowPrices = customPrices.get(row) || prices;
+        totals.totalAmount += qtys[0]*rowPrices.TM500 + qtys[1]*rowPrices.S_Milk + qtys[2]*rowPrices.S_Curd + qtys[3]*rowPrices.B_Curd + qtys[4]*rowPrices.H500 + qtys[5]*rowPrices.FCM500 + qtys[6]*rowPrices.FCM1L + qtys[7]*rowPrices.SM1L;
+      });
+      document.getElementById('t_TM500').innerText = totals.TM500.toFixed(1) + 'L';
+      document.getElementById('t_S_Milk').innerText = totals.S_Milk.toFixed(1) + 'L';
+      document.getElementById('t_S_Curd').innerText = totals.S_Curd.toFixed(1) + 'L';
+      document.getElementById('t_B_Curd').innerText = totals.B_Curd.toFixed(1) + 'L';
+      document.getElementById('t_H500').innerText = totals.H500.toFixed(1) + 'L';
+      document.getElementById('t_FCM500').innerText = totals.FCM500.toFixed(1) + 'L';
+      document.getElementById('t_FCM1L').innerText = totals.FCM1L.toFixed(1) + 'L';
+      document.getElementById('t_SM1L').innerText = totals.SM1L.toFixed(1) + 'L';
+      document.getElementById('totalDisplay').innerText = 'Total: ₹' + totals.totalAmount.toFixed(2);
     }
 
     function sendWhatsApp(btn) {
@@ -179,7 +218,13 @@
       window.open(`https://wa.me/${mobile}?text=${message}`, '_blank');
     }
 
-    function deleteRow(btn) { btn.parentElement.parentElement.remove(); saveCurrentDate(); }
+    function confirmDelete(btn) {
+      if (confirm('Are you sure you want to delete this customer entry?')) {
+        btn.parentElement.parentElement.remove();
+        saveCurrentDate();
+        updateTotals();
+      }
+    }
 
     function updateDate() {
       const date = document.getElementById('dateField').value;
