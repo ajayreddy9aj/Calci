@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Retail Tracker - Fresh</title>
+<title>Retail Tracker — Fixed Alignment</title>
 <style>
   :root{
     --accent:#06b6d4; --ok:#16a34a; --danger:#ef4444;
@@ -23,9 +23,9 @@
   thead th{background:#f1f5f9;padding:8px;border:1px solid var(--border);font-size:12px;white-space:nowrap}
   tbody td{padding:6px;border:1px solid var(--border);font-size:13px;text-align:center;background:#fff}
   td.left{text-align:left;padding-left:8px}
-  /* sticky first two columns */
-  .sticky-left{position:sticky;left:0;background:#fff;z-index:5}
-  .sticky-left-2{position:sticky;left:220px;background:#fff;z-index:5}
+  /* sticky first two columns: left values are applied dynamically via JS */
+  .sticky-left{position:sticky;left:0;background:#fff;z-index:6}
+  .sticky-left-2{position:sticky;background:#fff;z-index:5}
   /* inputs */
   input[type="text"]{padding:6px;border:1px solid var(--border);border-radius:6px}
   input.name{width:210px}
@@ -39,7 +39,6 @@
   .modal table td{padding:6px}
   @media (max-width:700px){
     input.name{width:150px} input.mobile{width:110px} input.prod{width:34px}
-    .sticky-left-2{left:160px}
   }
 </style>
 </head>
@@ -59,7 +58,7 @@
       </div>
     </div>
 
-    <div class="table-wrap">
+    <div class="table-wrap" id="tableWrap">
       <table id="salesTable" aria-label="Sales table">
         <thead>
           <tr class="totals-row">
@@ -122,11 +121,11 @@
 <script>
 /* ---------- configuration ---------- */
 const DEFAULT_PRICES = { TM500:56, S_Milk:45, S_Curd:45, B_Curd:68, H500:86, FCM500:77, FCM1L:72, SM1L:66 };
-const STORAGE_KEY = 'retail_tracker_fresh_v1';
+const STORAGE_KEY = 'retail_tracker_fixed_v1';
 
 /* ---------- utility ---------- */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 const safeNum = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 const two = n => Number(n).toFixed(2);
 
@@ -140,17 +139,13 @@ const grandTotalEl = $('#grandTotal');
 const modalBack = $('#modal');
 const savePricesBtn = $('#savePrices');
 const cancelPricesBtn = $('#cancelPrices');
+const tableWrap = $('#tableWrap');
 
-/* totals cells */
+/* totals */
 const totalsEls = {
-  TM500: $('#t_TM500'),
-  S_Milk: $('#t_S_Milk'),
-  S_Curd: $('#t_S_Curd'),
-  B_Curd: $('#t_B_Curd'),
-  H500: $('#t_H500'),
-  FCM500: $('#t_FCM500'),
-  FCM1L: $('#t_FCM1L'),
-  SM1L: $('#t_SM1L')
+  TM500: $('#t_TM500'), S_Milk: $('#t_S_Milk'), S_Curd: $('#t_S_Curd'),
+  B_Curd: $('#t_B_Curd'), H500: $('#t_H500'), FCM500: $('#t_FCM500'),
+  FCM1L: $('#t_FCM1L'), SM1L: $('#t_SM1L')
 };
 
 /* price storage for rows */
@@ -180,20 +175,15 @@ function createRow(values = []) {
   `;
 
   // bind events
-  const numInputs = tr.querySelectorAll('input[type="number"]');
-  numInputs.forEach(inp => inp.addEventListener('input', () => onQtyChange(tr)));
-
+  tr.querySelectorAll('input[type="number"]').forEach(inp => inp.addEventListener('input', () => onQtyChange(tr)));
   tr.querySelector('.edit').addEventListener('click', () => openModal(tr));
   tr.querySelector('.send').addEventListener('click', () => sendWhatsApp(tr));
   tr.querySelector('.del').addEventListener('click', () => deleteRow(tr));
-
   return tr;
 }
 
 /* ---------- helpers ---------- */
-function escapeHtml(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
 
 /* ---------- calculations ---------- */
 function onQtyChange(row) {
@@ -206,13 +196,12 @@ function onQtyChange(row) {
   const dueEl = row.querySelector('.due');
   if(dueEl.value === '' || safeNum(dueEl.value) < 0) dueEl.value = '0.00';
   updateTotals();
-  // autosave minimal (throttled by caller via interval)
 }
 
+/* ---------- totals ---------- */
 function updateTotals(){
   const totals = {TM500:0,S_Milk:0,S_Curd:0,B_Curd:0,H500:0,FCM500:0,FCM1L:0,SM1L:0,amount:0};
-  const rows = $$('#salesBody tr');
-  rows.forEach(row => {
+  $$('#salesBody tr').forEach(row=>{
     const inputs = row.querySelectorAll('input');
     const qty = Array.from(inputs).slice(2,10).map(i => safeNum(i.value));
     totals.TM500 += qty[0]; totals.S_Milk += qty[1]; totals.S_Curd += qty[2]; totals.B_Curd += qty[3];
@@ -238,6 +227,8 @@ addRowBtn.addEventListener('click', () => {
   salesBody.appendChild(r);
   const name = r.querySelector('input[type="text"]');
   if(name) name.focus();
+  // re-calc sticky offsets so newly inserted row's sticky cells align
+  requestAnimationFrame(setStickyOffsets);
 });
 
 function deleteRow(row) {
@@ -245,9 +236,10 @@ function deleteRow(row) {
   row.remove();
   saveCurrentDate();
   updateTotals();
+  requestAnimationFrame(setStickyOffsets);
 }
 
-/* ---------- modal (edit prices) ---------- */
+/* ---------- modal ---------- */
 function openModal(row){
   currentEditRow = row;
   const p = priceMap.get(row) || DEFAULT_PRICES;
@@ -256,12 +248,9 @@ function openModal(row){
   $('#p_FCM1L').value = p.FCM1L; $('#p_SM1L').value = p.SM1L;
   modalBack.style.display = 'flex';
 }
-cancelPricesBtn.addEventListener('click', () => {
-  modalBack.style.display = 'none';
-  currentEditRow = null;
-});
-savePricesBtn.addEventListener('click', () => {
-  if(!currentEditRow) { modalBack.style.display='none'; return; }
+$('#cancelPrices').addEventListener('click', ()=> { modalBack.style.display='none'; currentEditRow=null; });
+$('#savePrices').addEventListener('click', ()=>{
+  if(!currentEditRow){ modalBack.style.display='none'; return; }
   const p = {
     TM500: safeNum($('#p_TM500').value || DEFAULT_PRICES.TM500),
     S_Milk: safeNum($('#p_S_Milk').value || DEFAULT_PRICES.S_Milk),
@@ -274,12 +263,12 @@ savePricesBtn.addEventListener('click', () => {
   };
   priceMap.set(currentEditRow, p);
   modalBack.style.display = 'none';
-  onQtyChange(currentEditRow); // recalc row total with new prices
+  onQtyChange(currentEditRow);
   currentEditRow = null;
   saveCurrentDate();
 });
 
-/* ---------- WhatsApp invoice ---------- */
+/* ---------- WhatsApp ---------- */
 function sendWhatsApp(row){
   const inputs = row.querySelectorAll('input');
   const name = inputs[0].value || 'Customer';
@@ -305,7 +294,7 @@ function sendWhatsApp(row){
   window.open(`https://wa.me/${mobile}?text=${msg}`, '_blank');
 }
 
-/* ---------- storage (by date) ---------- */
+/* ---------- storage ---------- */
 function saveCurrentDate(){
   const date = dateField.value;
   if(!date){ alert('Please select a date first'); return; }
@@ -313,7 +302,7 @@ function saveCurrentDate(){
   const rows = $$('#salesBody tr').map(tr => Array.from(tr.querySelectorAll('input')).map(i => i.value));
   all[date] = rows;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  // save price map per row
+  // save price map per-date
   const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices') || '{}');
   priceStore[date] = $$('#salesBody tr').map(tr => priceMap.get(tr) || null);
   localStorage.setItem(STORAGE_KEY + '_prices', JSON.stringify(priceStore));
@@ -321,7 +310,7 @@ function saveCurrentDate(){
   setTimeout(()=> saveBtn.textContent = '💾 Save', 700);
 }
 function loadAll(){
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e){ return {}; }
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; }
 }
 function loadDate(date){
   const all = loadAll();
@@ -338,7 +327,7 @@ function loadDate(date){
       priceStore[date].forEach((p,i) => { if(p && rows[i]) priceMap.set(rows[i], p); });
     }
   } else {
-    // load most recent customers if exists
+    // fallback to most recent
     const keys = Object.keys(all).sort().reverse();
     if(keys.length){
       const last = all[keys[0]];
@@ -359,7 +348,7 @@ function loadDate(date){
       salesBody.appendChild(createRow());
     }
   }
-  // ensure events and recalc
+  // bind events and recalc
   $$('#salesBody tr').forEach(tr => {
     tr.querySelectorAll('input[type="number"]').forEach(inp => inp.addEventListener('input', () => onQtyChange(tr)));
     tr.querySelector('.edit').addEventListener('click', () => openModal(tr));
@@ -367,6 +356,8 @@ function loadDate(date){
     tr.querySelector('.del').addEventListener('click', () => deleteRow(tr));
     onQtyChange(tr);
   });
+  // set sticky offsets after rows have been rendered
+  requestAnimationFrame(setStickyOffsets);
   updateTotals();
 }
 
@@ -378,7 +369,7 @@ function openPrint(){
   html += `<table><thead>${document.querySelector('#salesTable thead').innerHTML}</thead><tbody>`;
   $$('#salesBody tr').forEach(r=>{
     const vals = Array.from(r.querySelectorAll('input')).slice(0,12).map(i => i.value || '');
-    html += '<tr>' + vals.map(v=>`<td>${v}</td>`).join('') + '</tr>';
+    html += '<tr>' + vals.map(v=>`<td>${escapeHtml(v)}</td>`).join('') + '</tr>';
   });
   html += `</tbody></table><h3>${grandTotalEl.textContent}</h3></body></html>`;
   const w = window.open('','_blank');
@@ -386,24 +377,58 @@ function openPrint(){
   setTimeout(()=> w.print(), 300);
 }
 
+/* ---------- sticky offsets fix ---------- */
+/* This measures the actual widths of the first two header cells and applies proper left offsets
+   to every element with .sticky-left and .sticky-left-2 so the sticky columns always align. */
+function setStickyOffsets(){
+  try{
+    const table = $('#salesTable');
+    if(!table) return;
+    // get header first row's first two th cells (they represent column widths)
+    // prefer the header cell in the second header row (labels) because first row is totals-row with different content
+    const headerRows = table.tHead ? Array.from(table.tHead.rows) : [];
+    if(headerRows.length < 2){
+      // fallback: get first row
+      const firstTh = table.querySelector('thead th');
+      if(firstTh){
+        document.querySelectorAll('.sticky-left').forEach(el => el.style.left = '0px');
+      }
+      return;
+    }
+    const labelsRow = headerRows[1]; // second row has the actual column labels
+    const firstCell = labelsRow.cells[0];
+    const secondCell = labelsRow.cells[1];
+    // compute left offsets including border/gap
+    const firstWidth = firstCell.getBoundingClientRect().width;
+    // add 0 to first (it stays 0)
+    const offset1 = 0;
+    const offset2 = Math.round(firstWidth + 0); // if you need to add 1-2px for border, tweak here
+    // apply
+    document.querySelectorAll('.sticky-left').forEach(el => el.style.left = offset1 + 'px');
+    document.querySelectorAll('.sticky-left-2').forEach(el => el.style.left = offset2 + 'px');
+  }catch(e){
+    // silent
+    console.warn('setStickyOffsets error', e);
+  }
+}
+
 /* ---------- init ---------- */
 function init(){
+  // set today's date
   const today = new Date().toISOString().slice(0,10);
   dateField.value = today;
   loadDate(dateField.value);
-  dateField.addEventListener('change', () => loadDate(dateField.value));
-  addRowBtn.addEventListener('click', () => {
-    const r = createRow();
-    salesBody.appendChild(r);
-    const name = r.querySelector('input[type="text"]');
-    if(name) name.focus();
-  });
+  dateField.addEventListener('change', ()=> loadDate(dateField.value));
+  addRowBtn.addEventListener('click', ()=> { const r = createRow(); salesBody.appendChild(r); const name = r.querySelector('input[type="text"]'); if(name) name.focus(); requestAnimationFrame(setStickyOffsets); });
   saveBtn.addEventListener('click', saveCurrentDate);
   printBtn.addEventListener('click', openPrint);
-  // autosave every 6s (if user wants remove change number)
+  // autosave every 6s (safe)
   setInterval(() => { try { saveCurrentDate(); } catch(e){} }, 6000);
-  if($$('#salesBody tr').length === 0) salesBody.appendChild(createRow());
-  updateTotals();
+  // ensure sticky offsets recalc on resize and scroll of wrapper
+  window.addEventListener('resize', () => requestAnimationFrame(setStickyOffsets));
+  tableWrap.addEventListener('scroll', ()=> { /* no-op but ensures layout stable */ });
+  // call once
+  requestAnimationFrame(setStickyOffsets);
 }
 init();
 </script>
