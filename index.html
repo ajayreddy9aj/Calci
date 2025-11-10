@@ -3,290 +3,276 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Retail Tracker — Fixed Alignment</title>
+<title>Retail Tracker — Simple</title>
 <style>
-  :root{
-    --accent:#06b6d4; --ok:#16a34a; --danger:#ef4444;
-    --muted:#6b7280; --bg:#ffffff; --panel:#f8fafc; --border:#e6edf3;
-  }
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#0f172a}
-  .wrap{max-width:1200px;margin:12px auto;padding:14px}
-  header{display:flex;align-items:center;gap:12px}
-  h1{margin:0;font-size:18px}
-  .top-right{margin-left:auto}
-  .chip{background:var(--panel);border:1px solid var(--border);padding:6px 10px;border-radius:8px}
-  .controls{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
-  button{padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);cursor:pointer}
-  button.primary{background:var(--accent);color:#fff;border:none}
-  .table-wrap{overflow:auto;margin-top:12px;position:relative}
-  table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
-  thead th{background:#f1f5f9;padding:8px;border:1px solid var(--border);font-size:12px;white-space:nowrap}
-  tbody td{padding:6px;border:1px solid var(--border);font-size:13px;text-align:center;background:#fff}
+  body{font-family:Arial,Helvetica,sans-serif;margin:12px;background:#ffffff;color:#0b1220}
+  h1{margin:0 0 8px 0;font-size:20px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  label{font-size:14px}
+  button{padding:8px 10px;border-radius:6px;border:1px solid #dbe7ef;background:#f8fafc;cursor:pointer}
+  button.primary{background:#06b6d4;color:#fff;border:none}
+  .chip{background:#f1f5f9;padding:6px 10px;border-radius:8px;border:1px solid #e6edf3;font-weight:600}
+  .table-wrap{overflow:auto;border:1px solid #e6edf3}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:#f8fafc;padding:8px;border:1px solid #e6edf3;font-size:13px}
+  tbody td{padding:6px;border:1px solid #e6edf3;font-size:13px;text-align:center}
   td.left{text-align:left;padding-left:8px}
-  /* sticky first two columns: left values are applied dynamically via JS */
-  .sticky-left{position:sticky;left:0;background:#fff;z-index:6}
-  .sticky-left-2{position:sticky;background:#fff;z-index:5}
-  /* inputs */
-  input[type="text"]{padding:6px;border:1px solid var(--border);border-radius:6px}
-  input.name{width:210px}
+  input[type="text"], input[type="number"]{padding:6px;border:1px solid #e6edf3;border-radius:6px}
+  input.name{width:220px}
   input.mobile{width:160px}
-  input.prod{width:36px;text-align:center}
+  input.prod{width:44px;text-align:center}
   input.paid,input.due{width:90px;text-align:center}
-  .actions button{padding:6px 10px}
+  .actions button{padding:6px 8px;margin:0 4px}
   /* modal */
-  .modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;z-index:50}
-  .modal{background:#fff;padding:16px;border-radius:10px;min-width:320px;box-shadow:0 10px 30px rgba(15,23,42,0.12)}
+  .modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;z-index:40}
+  .modal{background:#fff;padding:14px;border-radius:8px;min-width:300px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
   .modal table td{padding:6px}
   @media (max-width:700px){
-    input.name{width:150px} input.mobile{width:110px} input.prod{width:34px}
+    input.name{width:150px} input.mobile{width:110px} input.prod{width:36px}
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Daily Retail Sales Tracker</h1>
-      <div class="top-right"><div id="grandTotal" class="chip">Grand Total: ₹0.00</div></div>
-    </header>
+  <h1>Daily Retail Sales Tracker — Simple</h1>
 
-    <div style="margin-top:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-      <label>Date: <input id="dateField" type="date"></label>
-      <div class="controls">
-        <button id="addRowBtn">➕ Add Customer</button>
-        <button id="saveBtn" class="primary">💾 Save</button>
-        <button id="printBtn">🖨️ Print / PDF</button>
-      </div>
-    </div>
-
-    <div class="table-wrap" id="tableWrap">
-      <table id="salesTable" aria-label="Sales table">
-        <thead>
-          <tr class="totals-row">
-            <th class="sticky-left" style="min-width:220px">Totals</th>
-            <th class="sticky-left-2" style="min-width:160px">-</th>
-            <th id="t_TM500">0L</th>
-            <th id="t_S_Milk">0L</th>
-            <th id="t_S_Curd">0L</th>
-            <th id="t_B_Curd">0L</th>
-            <th id="t_H500">0L</th>
-            <th id="t_FCM500">0L</th>
-            <th id="t_FCM1L">0L</th>
-            <th id="t_SM1L">0L</th>
-            <th colspan="5"></th>
-          </tr>
-          <tr>
-            <th class="sticky-left left">Customer Name</th>
-            <th class="sticky-left-2">Mobile</th>
-            <th>TM500 <div style="font-size:11px;color:#6b7280">₹56/L</div></th>
-            <th>S Milk <div style="font-size:11px;color:#6b7280">₹45/L</div></th>
-            <th>S Curd <div style="font-size:11px;color:#6b7280">₹45/L</div></th>
-            <th>B Curd <div style="font-size:11px;color:#6b7280">₹68/L</div></th>
-            <th>H500 <div style="font-size:11px;color:#6b7280">₹86/L</div></th>
-            <th>FCM500 <div style="font-size:11px;color:#6b7280">₹77/L</div></th>
-            <th>FCM1L <div style="font-size:11px;color:#6b7280">₹72/L</div></th>
-            <th>SM1L <div style="font-size:11px;color:#6b7280">₹66/L</div></th>
-            <th>Paid (₹)</th>
-            <th>Due (₹)</th>
-            <th style="min-width:90px">Edit</th>
-            <th style="min-width:90px">Send</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody id="salesBody"></tbody>
-      </table>
+  <div class="row">
+    <label>Date: <input id="dateField" type="date"></label>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <div id="grandTotal" class="chip">Grand Total: ₹0.00</div>
     </div>
   </div>
 
+  <div class="row" style="margin-top:6px">
+    <button id="addRow">➕ Add Row</button>
+    <button id="saveBtn" class="primary">💾 Save</button>
+    <button id="printBtn">🖨️ Print / PDF</button>
+  </div>
+
+  <div class="table-wrap" style="margin-top:10px">
+    <table id="sheet">
+      <thead>
+        <tr>
+          <th style="min-width:220px">Customer Name</th>
+          <th style="min-width:160px">Mobile</th>
+          <th>TM500<br><small>₹56/L</small></th>
+          <th>S Milk<br><small>₹45/L</small></th>
+          <th>S Curd<br><small>₹45/L</small></th>
+          <th>B Curd<br><small>₹68/L</small></th>
+          <th>H500<br><small>₹86/L</small></th>
+          <th>FCM500<br><small>₹77/L</small></th>
+          <th>FCM1L<br><small>₹72/L</small></th>
+          <th>SM1L<br><small>₹66/L</small></th>
+          <th>Paid (₹)</th>
+          <th>Due (₹)</th>
+          <th>Edit</th>
+          <th>Send</th>
+          <th>Del</th>
+        </tr>
+      </thead>
+      <tbody id="body"></tbody>
+      <tfoot>
+        <tr>
+          <td class="left">Totals</td><td></td>
+          <td id="tot_TM">0L</td><td id="tot_SM">0L</td><td id="tot_SC">0L</td>
+          <td id="tot_BC">0L</td><td id="tot_H5">0L</td><td id="tot_F5">0L</td>
+          <td id="tot_F1">0L</td><td id="tot_S1">0L>
+          </td><td colspan="5"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
   <!-- modal -->
-  <div id="modal" class="modal-back" role="dialog" aria-modal="true">
+  <div id="modal" class="modal-back">
     <div class="modal">
-      <h3 style="margin:0 0 8px 0">Edit Prices (this customer)</h3>
+      <h3 style="margin:0 0 8px 0">Edit Prices (this row)</h3>
       <table>
-        <tr><td>TM500:</td><td><input id="p_TM500" type="number"></td></tr>
-        <tr><td>S Milk:</td><td><input id="p_S_Milk" type="number"></td></tr>
-        <tr><td>S Curd:</td><td><input id="p_S_Curd" type="number"></td></tr>
-        <tr><td>B Curd:</td><td><input id="p_B_Curd" type="number"></td></tr>
-        <tr><td>H500:</td><td><input id="p_H500" type="number"></td></tr>
-        <tr><td>FCM500:</td><td><input id="p_FCM500" type="number"></td></tr>
-        <tr><td>FCM1L:</td><td><input id="p_FCM1L" type="number"></td></tr>
-        <tr><td>SM1L:</td><td><input id="p_SM1L" type="number"></td></tr>
+        <tr><td>TM500:</td><td><input id="m_TM" type="number"></td></tr>
+        <tr><td>S Milk:</td><td><input id="m_SM" type="number"></td></tr>
+        <tr><td>S Curd:</td><td><input id="m_SC" type="number"></td></tr>
+        <tr><td>B Curd:</td><td><input id="m_BC" type="number"></td></tr>
+        <tr><td>H500:</td><td><input id="m_H5" type="number"></td></tr>
+        <tr><td>FCM500:</td><td><input id="m_F5" type="number"></td></tr>
+        <tr><td>FCM1L:</td><td><input id="m_F1" type="number"></td></tr>
+        <tr><td>SM1L:</td><td><input id="m_S1" type="number"></td></tr>
       </table>
-      <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
-        <button id="savePrices" class="primary">Save</button>
-        <button id="cancelPrices">Cancel</button>
+      <div style="margin-top:10px;display:flex;gap:8px;justify-content:center">
+        <button id="saveModal" class="primary">Save</button>
+        <button id="cancelModal">Cancel</button>
       </div>
     </div>
   </div>
 
 <script>
-/* ---------- configuration ---------- */
+/* ---------- config ---------- */
 const DEFAULT_PRICES = { TM500:56, S_Milk:45, S_Curd:45, B_Curd:68, H500:86, FCM500:77, FCM1L:72, SM1L:66 };
-const STORAGE_KEY = 'retail_tracker_fixed_v1';
+const STORAGE_KEY = 'retail_simple_v1';
 
-/* ---------- utility ---------- */
+/* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const safeNum = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 const two = n => Number(n).toFixed(2);
 
 /* ---------- elements ---------- */
+const body = $('#body');
 const dateField = $('#dateField');
-const salesBody = $('#salesBody');
-const addRowBtn = $('#addRowBtn');
+const grandTotal = $('#grandTotal');
+const addRowBtn = $('#addRow');
 const saveBtn = $('#saveBtn');
 const printBtn = $('#printBtn');
-const grandTotalEl = $('#grandTotal');
-const modalBack = $('#modal');
-const savePricesBtn = $('#savePrices');
-const cancelPricesBtn = $('#cancelPrices');
-const tableWrap = $('#tableWrap');
 
-/* totals */
-const totalsEls = {
-  TM500: $('#t_TM500'), S_Milk: $('#t_S_Milk'), S_Curd: $('#t_S_Curd'),
-  B_Curd: $('#t_B_Curd'), H500: $('#t_H500'), FCM500: $('#t_FCM500'),
-  FCM1L: $('#t_FCM1L'), SM1L: $('#t_SM1L')
-};
+const modal = $('#modal');
+const saveModalBtn = $('#saveModal');
+const cancelModalBtn = $('#cancelModal');
 
-/* price storage for rows */
-const priceMap = new WeakMap();
-let currentEditRow = null;
+/* track which row is being edited */
+let editingRow = null;
 
-/* ---------- row creation ---------- */
-function createRow(values = []) {
+/* ---------- create row ---------- */
+function createRow(values = [], prices = null) {
+  // values array length 12: name,mobile,tm,sm,sc,bc,h5,f5,f1,s1,paid,due
   const tr = document.createElement('tr');
 
+  // store custom prices JSON in data-prices attribute if provided
+  const pricesAttr = prices ? JSON.stringify(prices) : '';
+
   tr.innerHTML = `
-    <td class="left sticky-left"><input class="name" type="text" value="${escapeHtml(values[0]||'')}" placeholder="Name"></td>
-    <td class="sticky-left-2"><input class="mobile" type="text" value="${escapeHtml(values[1]||'')}" placeholder="Mobile"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[2]||''}"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[3]||''}"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[4]||''}"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[5]||''}"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[6]||''}"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[7]||''}"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[8]||''}"></td>
-    <td><input class="prod" type="number" min="0" step="0.1" value="${values[9]||''}"></td>
+    <td class="left"><input class="name" type="text" value="${escapeHtml(values[0]||'')}"></td>
+    <td><input class="mobile" type="text" value="${escapeHtml(values[1]||'')}"></td>
+    <td><input class="prod" data-key="TM500" type="number" min="0" step="0.1" value="${values[2]||''}"></td>
+    <td><input class="prod" data-key="S_Milk" type="number" min="0" step="0.1" value="${values[3]||''}"></td>
+    <td><input class="prod" data-key="S_Curd" type="number" min="0" step="0.1" value="${values[4]||''}"></td>
+    <td><input class="prod" data-key="B_Curd" type="number" min="0" step="0.1" value="${values[5]||''}"></td>
+    <td><input class="prod" data-key="H500" type="number" min="0" step="0.1" value="${values[6]||''}"></td>
+    <td><input class="prod" data-key="FCM500" type="number" min="0" step="0.1" value="${values[7]||''}"></td>
+    <td><input class="prod" data-key="FCM1L" type="number" min="0" step="0.1" value="${values[8]||''}"></td>
+    <td><input class="prod" data-key="SM1L" type="number" min="0" step="0.1" value="${values[9]||''}"></td>
     <td><input class="paid" type="number" readonly value="${values[10]||''}"></td>
     <td><input class="due" type="number" min="0" step="0.01" value="${values[11]||''}"></td>
-    <td class="actions"><button class="edit">Edit</button></td>
-    <td class="actions"><button class="send">Send</button></td>
-    <td class="actions"><button class="del">Del</button></td>
+    <td><button class="edit">Edit</button></td>
+    <td><button class="send">Send</button></td>
+    <td><button class="del">Del</button></td>
   `;
+  if(pricesAttr) tr.setAttribute('data-prices', pricesAttr);
 
   // bind events
-  tr.querySelectorAll('input[type="number"]').forEach(inp => inp.addEventListener('input', () => onQtyChange(tr)));
-  tr.querySelector('.edit').addEventListener('click', () => openModal(tr));
+  tr.querySelectorAll('.prod').forEach(i => i.addEventListener('input', () => recalcRow(tr)));
+  tr.querySelector('.due').addEventListener('input', () => saveCurrentDate());
+  tr.querySelector('.edit').addEventListener('click', () => openEdit(tr));
   tr.querySelector('.send').addEventListener('click', () => sendWhatsApp(tr));
   tr.querySelector('.del').addEventListener('click', () => deleteRow(tr));
+
   return tr;
 }
 
-/* ---------- helpers ---------- */
+/* escape simple text */
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
 
-/* ---------- calculations ---------- */
-function onQtyChange(row) {
-  const inputs = row.querySelectorAll('input');
-  const qty = Array.from(inputs).slice(2,10).map(i => safeNum(i.value));
-  const prices = priceMap.get(row) || DEFAULT_PRICES;
-  const total = qty[0]*prices.TM500 + qty[1]*prices.S_Milk + qty[2]*prices.S_Curd + qty[3]*prices.B_Curd
-              + qty[4]*prices.H500 + qty[5]*prices.FCM500 + qty[6]*prices.FCM1L + qty[7]*prices.SM1L;
-  row.querySelector('.paid').value = two(total);
-  const dueEl = row.querySelector('.due');
-  if(dueEl.value === '' || safeNum(dueEl.value) < 0) dueEl.value = '0.00';
+/* ---------- recalc row & totals ---------- */
+function recalcRow(tr){
+  // get prices (custom or default)
+  const prices = tr.getAttribute('data-prices') ? JSON.parse(tr.getAttribute('data-prices')) : DEFAULT_PRICES;
+  const prodInputs = tr.querySelectorAll('.prod');
+  const qty = Array.from(prodInputs).map(i => safeNum(i.value));
+  const keys = ['TM500','S_Milk','S_Curd','B_Curd','H500','FCM500','FCM1L','SM1L'];
+  let total = 0;
+  qty.forEach((q,idx) => {
+    total += q * (prices[keys[idx]] || DEFAULT_PRICES[keys[idx]]);
+  });
+  tr.querySelector('.paid').value = two(total);
+  // if due empty set 0.00
+  const due = tr.querySelector('.due');
+  if(due.value === '' || safeNum(due.value) < 0) due.value = '0.00';
   updateTotals();
+  saveCurrentDate(); // keep simple: save on change
 }
 
-/* ---------- totals ---------- */
 function updateTotals(){
-  const totals = {TM500:0,S_Milk:0,S_Curd:0,B_Curd:0,H500:0,FCM500:0,FCM1L:0,SM1L:0,amount:0};
-  $$('#salesBody tr').forEach(row=>{
-    const inputs = row.querySelectorAll('input');
-    const qty = Array.from(inputs).slice(2,10).map(i => safeNum(i.value));
+  const rows = $$('tbody#body tr');
+  const totals = { TM500:0, S_Milk:0, S_Curd:0, B_Curd:0, H500:0, FCM500:0, FCM1L:0, SM1L:0, amount:0 };
+  rows.forEach(r => {
+    const prodInputs = r.querySelectorAll('.prod');
+    const qty = Array.from(prodInputs).map(i => safeNum(i.value));
     totals.TM500 += qty[0]; totals.S_Milk += qty[1]; totals.S_Curd += qty[2]; totals.B_Curd += qty[3];
     totals.H500 += qty[4]; totals.FCM500 += qty[5]; totals.FCM1L += qty[6]; totals.SM1L += qty[7];
-    const prices = priceMap.get(row) || DEFAULT_PRICES;
-    totals.amount += qty[0]*prices.TM500 + qty[1]*prices.S_Milk + qty[2]*prices.S_Curd + qty[3]*prices.B_Curd
-                   + qty[4]*prices.H500 + qty[5]*prices.FCM500 + qty[6]*prices.FCM1L + qty[7]*prices.SM1L;
+    const prices = r.getAttribute('data-prices') ? JSON.parse(r.getAttribute('data-prices')) : DEFAULT_PRICES;
+    const keys = ['TM500','S_Milk','S_Curd','B_Curd','H500','FCM500','FCM1L','SM1L'];
+    qty.forEach((q,i) => totals.amount += q * (prices[keys[i]] || DEFAULT_PRICES[keys[i]]));
   });
-  totalsEls.TM500.textContent = totals.TM500.toFixed(1) + 'L';
-  totalsEls.S_Milk.textContent = totals.S_Milk.toFixed(1) + 'L';
-  totalsEls.S_Curd.textContent = totals.S_Curd.toFixed(1) + 'L';
-  totalsEls.B_Curd.textContent = totals.B_Curd.toFixed(1) + 'L';
-  totalsEls.H500.textContent = totals.H500.toFixed(1) + 'L';
-  totalsEls.FCM500.textContent = totals.FCM500.toFixed(1) + 'L';
-  totalsEls.FCM1L.textContent = totals.FCM1L.toFixed(1) + 'L';
-  totalsEls.SM1L.textContent = totals.SM1L.toFixed(1) + 'L';
-  grandTotalEl.textContent = 'Grand Total: ₹' + totals.amount.toFixed(2);
+  $('#tot_TM').textContent = totals.TM500.toFixed(1) + 'L';
+  $('#tot_SM').textContent = totals.S_Milk.toFixed(1) + 'L';
+  $('#tot_SC').textContent = totals.S_Curd.toFixed(1) + 'L';
+  $('#tot_BC').textContent = totals.B_Curd.toFixed(1) + 'L';
+  $('#tot_H5').textContent = totals.H500.toFixed(1) + 'L';
+  $('#tot_F5').textContent = totals.FCM500.toFixed(1) + 'L';
+  $('#tot_F1').textContent = totals.FCM1L.toFixed(1) + 'L';
+  $('#tot_S1').textContent = totals.SM1L.toFixed(1) + 'L';
+  grandTotal.textContent = 'Grand Total: ₹' + totals.amount.toFixed(2);
 }
 
-/* ---------- add / delete ---------- */
-addRowBtn.addEventListener('click', () => {
+/* ---------- add/delete ---------- */
+$('#addRow').addEventListener('click', ()=> {
   const r = createRow();
-  salesBody.appendChild(r);
-  const name = r.querySelector('input[type="text"]');
-  if(name) name.focus();
-  // re-calc sticky offsets so newly inserted row's sticky cells align
-  requestAnimationFrame(setStickyOffsets);
+  body.appendChild(r);
+  r.querySelector('.name').focus();
 });
 
-function deleteRow(row) {
-  if(!confirm('Delete this customer entry?')) return;
-  row.remove();
+function deleteRow(tr){
+  if(!confirm('Delete this row?')) return;
+  tr.remove();
   saveCurrentDate();
   updateTotals();
-  requestAnimationFrame(setStickyOffsets);
 }
 
-/* ---------- modal ---------- */
-function openModal(row){
-  currentEditRow = row;
-  const p = priceMap.get(row) || DEFAULT_PRICES;
-  $('#p_TM500').value = p.TM500; $('#p_S_Milk').value = p.S_Milk; $('#p_S_Curd').value = p.S_Curd;
-  $('#p_B_Curd').value = p.B_Curd; $('#p_H500').value = p.H500; $('#p_FCM500').value = p.FCM500;
-  $('#p_FCM1L').value = p.FCM1L; $('#p_SM1L').value = p.SM1L;
-  modalBack.style.display = 'flex';
+/* ---------- modal edit prices ---------- */
+function openEdit(tr){
+  editingRow = tr;
+  const prices = tr.getAttribute('data-prices') ? JSON.parse(tr.getAttribute('data-prices')) : DEFAULT_PRICES;
+  $('#m_TM').value = prices.TM500;
+  $('#m_SM').value = prices.S_Milk;
+  $('#m_SC').value = prices.S_Curd;
+  $('#m_BC').value = prices.B_Curd;
+  $('#m_H5').value = prices.H500;
+  $('#m_F5').value = prices.FCM500;
+  $('#m_F1').value = prices.FCM1L;
+  $('#m_S1').value = prices.SM1L;
+  modal.style.display = 'flex';
 }
-$('#cancelPrices').addEventListener('click', ()=> { modalBack.style.display='none'; currentEditRow=null; });
-$('#savePrices').addEventListener('click', ()=>{
-  if(!currentEditRow){ modalBack.style.display='none'; return; }
-  const p = {
-    TM500: safeNum($('#p_TM500').value || DEFAULT_PRICES.TM500),
-    S_Milk: safeNum($('#p_S_Milk').value || DEFAULT_PRICES.S_Milk),
-    S_Curd: safeNum($('#p_S_Curd').value || DEFAULT_PRICES.S_Curd),
-    B_Curd: safeNum($('#p_B_Curd').value || DEFAULT_PRICES.B_Curd),
-    H500: safeNum($('#p_H500').value || DEFAULT_PRICES.H500),
-    FCM500: safeNum($('#p_FCM500').value || DEFAULT_PRICES.FCM500),
-    FCM1L: safeNum($('#p_FCM1L').value || DEFAULT_PRICES.FCM1L),
-    SM1L: safeNum($('#p_SM1L').value || DEFAULT_PRICES.SM1L)
+$('#cancelModal').addEventListener('click', ()=> { modal.style.display = 'none'; editingRow = null; });
+$('#saveModal').addEventListener('click', ()=> {
+  if(!editingRow) { modal.style.display = 'none'; return; }
+  const newP = {
+    TM500: safeNum($('#m_TM').value || DEFAULT_PRICES.TM500),
+    S_Milk: safeNum($('#m_SM').value || DEFAULT_PRICES.S_Milk),
+    S_Curd: safeNum($('#m_SC').value || DEFAULT_PRICES.S_Curd),
+    B_Curd: safeNum($('#m_BC').value || DEFAULT_PRICES.B_Curd),
+    H500: safeNum($('#m_H5').value || DEFAULT_PRICES.H500),
+    FCM500: safeNum($('#m_F5').value || DEFAULT_PRICES.FCM500),
+    FCM1L: safeNum($('#m_F1').value || DEFAULT_PRICES.FCM1L),
+    SM1L: safeNum($('#m_S1').value || DEFAULT_PRICES.SM1L)
   };
-  priceMap.set(currentEditRow, p);
-  modalBack.style.display = 'none';
-  onQtyChange(currentEditRow);
-  currentEditRow = null;
-  saveCurrentDate();
+  editingRow.setAttribute('data-prices', JSON.stringify(newP));
+  recalcRow(editingRow);
+  modal.style.display = 'none';
+  editingRow = null;
 });
 
-/* ---------- WhatsApp ---------- */
-function sendWhatsApp(row){
-  const inputs = row.querySelectorAll('input');
+/* ---------- WhatsApp send ---------- */
+function sendWhatsApp(tr){
+  const inputs = tr.querySelectorAll('input');
   const name = inputs[0].value || 'Customer';
-  let mobile = (inputs[1].value || '').replace(/\D/g,'');
-  if(!mobile){ alert('Enter mobile number to send invoice'); return; }
-  const qty = Array.from(inputs).slice(2,10).map(i => safeNum(i.value));
-  const prices = priceMap.get(row) || DEFAULT_PRICES;
+  const mobileRaw = inputs[1].value || '';
+  const mobile = mobileRaw.replace(/\D/g,'');
+  if(!mobile){ alert('Enter mobile number to send'); return; }
+  const prodInputs = tr.querySelectorAll('.prod');
+  const qty = Array.from(prodInputs).map(i => safeNum(i.value));
+  const keys = ['TM500','S_Milk','S_Curd','B_Curd','H500','FCM500','FCM1L','SM1L'];
+  const prices = tr.getAttribute('data-prices') ? JSON.parse(tr.getAttribute('data-prices')) : DEFAULT_PRICES;
   const items = [];
-  if(qty[0]) items.push(`TM500 ${qty[0]}L x ₹${prices.TM500}`);
-  if(qty[1]) items.push(`S Milk ${qty[1]}L x ₹${prices.S_Milk}`);
-  if(qty[2]) items.push(`S Curd ${qty[2]}L x ₹${prices.S_Curd}`);
-  if(qty[3]) items.push(`B Curd ${qty[3]}L x ₹${prices.B_Curd}`);
-  if(qty[4]) items.push(`H500 ${qty[4]}L x ₹${prices.H500}`);
-  if(qty[5]) items.push(`FCM500 ${qty[5]}L x ₹${prices.FCM500}`);
-  if(qty[6]) items.push(`FCM1L ${qty[6]}L x ₹${prices.FCM1L}`);
-  if(qty[7]) items.push(`SM1L ${qty[7]}L x ₹${prices.SM1L}`);
-  const total = safeNum(inputs[10].value);
-  const due = safeNum(inputs[11].value);
+  qty.forEach((q,idx)=> { if(q) items.push(`${keys[idx]} ${q}L x ₹${prices[keys[idx]]}`); });
+  const total = safeNum(tr.querySelector('.paid').value);
+  const due = safeNum(tr.querySelector('.due').value);
   const date = dateField.value || '';
   let msg = `Hi ${name},%0AYour bill for ${date}:%0A`;
   if(items.length) msg += items.join('%0A') + '%0A';
@@ -294,70 +280,57 @@ function sendWhatsApp(row){
   window.open(`https://wa.me/${mobile}?text=${msg}`, '_blank');
 }
 
-/* ---------- storage ---------- */
+/* ---------- save/load per date ---------- */
 function saveCurrentDate(){
   const date = dateField.value;
-  if(!date){ alert('Please select a date first'); return; }
+  if(!date){ alert('Pick a date first'); return; }
   const all = loadAll();
-  const rows = $$('#salesBody tr').map(tr => Array.from(tr.querySelectorAll('input')).map(i => i.value));
+  const rows = $$('tbody#body tr').map(tr => {
+    const inputs = tr.querySelectorAll('input');
+    const arr = Array.from(inputs).map(i => i.value || '');
+    return { vals: arr, prices: tr.getAttribute('data-prices') || '' };
+  });
   all[date] = rows;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  // save price map per-date
-  const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices') || '{}');
-  priceStore[date] = $$('#salesBody tr').map(tr => priceMap.get(tr) || null);
-  localStorage.setItem(STORAGE_KEY + '_prices', JSON.stringify(priceStore));
   saveBtn.textContent = 'Saved ✓';
   setTimeout(()=> saveBtn.textContent = '💾 Save', 700);
 }
+
 function loadAll(){
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; }
 }
+
 function loadDate(date){
   const all = loadAll();
-  salesBody.innerHTML = '';
+  body.innerHTML = '';
   if(all[date] && Array.isArray(all[date]) && all[date].length){
-    all[date].forEach(vals => {
-      const tr = createRow(vals);
-      salesBody.appendChild(tr);
+    all[date].forEach(obj => {
+      const vals = obj.vals || [];
+      const prices = obj.prices ? JSON.parse(obj.prices) : null;
+      const tr = createRow(vals, prices);
+      body.appendChild(tr);
     });
-    // restore prices
-    const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices') || '{}');
-    if(priceStore[date] && Array.isArray(priceStore[date])){
-      const rows = $$('#salesBody tr');
-      priceStore[date].forEach((p,i) => { if(p && rows[i]) priceMap.set(rows[i], p); });
-    }
   } else {
-    // fallback to most recent
+    // if no data for this date, try last known or create single blank row
     const keys = Object.keys(all).sort().reverse();
     if(keys.length){
       const last = all[keys[0]];
-      if(last && Array.isArray(last)){
-        last.forEach(vals => {
-          const tr = createRow(vals);
-          salesBody.appendChild(tr);
+      if(last && last.length){
+        last.forEach(obj => {
+          const vals = obj.vals || [];
+          const prices = obj.prices ? JSON.parse(obj.prices) : null;
+          const tr = createRow(vals, prices);
+          body.appendChild(tr);
         });
-        const priceStore = JSON.parse(localStorage.getItem(STORAGE_KEY + '_prices') || '{}');
-        if(priceStore[keys[0]]){
-          const rows = $$('#salesBody tr');
-          priceStore[keys[0]].forEach((p,i) => { if(p && rows[i]) priceMap.set(rows[i], p); });
-        }
       } else {
-        salesBody.appendChild(createRow());
+        body.appendChild(createRow());
       }
     } else {
-      salesBody.appendChild(createRow());
+      body.appendChild(createRow());
     }
   }
-  // bind events and recalc
-  $$('#salesBody tr').forEach(tr => {
-    tr.querySelectorAll('input[type="number"]').forEach(inp => inp.addEventListener('input', () => onQtyChange(tr)));
-    tr.querySelector('.edit').addEventListener('click', () => openModal(tr));
-    tr.querySelector('.send').addEventListener('click', () => sendWhatsApp(tr));
-    tr.querySelector('.del').addEventListener('click', () => deleteRow(tr));
-    onQtyChange(tr);
-  });
-  // set sticky offsets after rows have been rendered
-  requestAnimationFrame(setStickyOffsets);
+  // ensure recalc and event binding (createRow already binds)
+  $$('tbody#body tr').forEach(tr => recalcRow(tr));
   updateTotals();
 }
 
@@ -366,69 +339,33 @@ function openPrint(){
   const date = dateField.value || '';
   let html = `<html><head><title>Daily Sales - ${date}</title><style>body{font-family:Arial;padding:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;text-align:center}</style></head><body>`;
   html += `<h2>Daily Sales - ${date}</h2>`;
-  html += `<table><thead>${document.querySelector('#salesTable thead').innerHTML}</thead><tbody>`;
-  $$('#salesBody tr').forEach(r=>{
+  html += `<table><thead>${$('#sheet thead').innerHTML}</thead><tbody>`;
+  $$('tbody#body tr').forEach(r => {
     const vals = Array.from(r.querySelectorAll('input')).slice(0,12).map(i => i.value || '');
-    html += '<tr>' + vals.map(v=>`<td>${escapeHtml(v)}</td>`).join('') + '</tr>';
+    html += '<tr>' + vals.map(v => `<td>${escapeHtml(v)}</td>`).join('') + '</tr>';
   });
-  html += `</tbody></table><h3>${grandTotalEl.textContent}</h3></body></html>`;
+  html += `</tbody></table><h3>${grandTotal.textContent}</h3></body></html>`;
   const w = window.open('','_blank');
   w.document.write(html); w.document.close(); w.focus();
   setTimeout(()=> w.print(), 300);
 }
 
-/* ---------- sticky offsets fix ---------- */
-/* This measures the actual widths of the first two header cells and applies proper left offsets
-   to every element with .sticky-left and .sticky-left-2 so the sticky columns always align. */
-function setStickyOffsets(){
-  try{
-    const table = $('#salesTable');
-    if(!table) return;
-    // get header first row's first two th cells (they represent column widths)
-    // prefer the header cell in the second header row (labels) because first row is totals-row with different content
-    const headerRows = table.tHead ? Array.from(table.tHead.rows) : [];
-    if(headerRows.length < 2){
-      // fallback: get first row
-      const firstTh = table.querySelector('thead th');
-      if(firstTh){
-        document.querySelectorAll('.sticky-left').forEach(el => el.style.left = '0px');
-      }
-      return;
-    }
-    const labelsRow = headerRows[1]; // second row has the actual column labels
-    const firstCell = labelsRow.cells[0];
-    const secondCell = labelsRow.cells[1];
-    // compute left offsets including border/gap
-    const firstWidth = firstCell.getBoundingClientRect().width;
-    // add 0 to first (it stays 0)
-    const offset1 = 0;
-    const offset2 = Math.round(firstWidth + 0); // if you need to add 1-2px for border, tweak here
-    // apply
-    document.querySelectorAll('.sticky-left').forEach(el => el.style.left = offset1 + 'px');
-    document.querySelectorAll('.sticky-left-2').forEach(el => el.style.left = offset2 + 'px');
-  }catch(e){
-    // silent
-    console.warn('setStickyOffsets error', e);
-  }
-}
-
 /* ---------- init ---------- */
 function init(){
-  // set today's date
   const today = new Date().toISOString().slice(0,10);
   dateField.value = today;
-  loadDate(dateField.value);
+  loadDate(today);
   dateField.addEventListener('change', ()=> loadDate(dateField.value));
-  addRowBtn.addEventListener('click', ()=> { const r = createRow(); salesBody.appendChild(r); const name = r.querySelector('input[type="text"]'); if(name) name.focus(); requestAnimationFrame(setStickyOffsets); });
+  addRowBtn.addEventListener('click', ()=> {
+    const tr = createRow();
+    body.appendChild(tr);
+    tr.querySelector('.name').focus();
+  });
   saveBtn.addEventListener('click', saveCurrentDate);
   printBtn.addEventListener('click', openPrint);
-  // autosave every 6s (safe)
-  setInterval(() => { try { saveCurrentDate(); } catch(e){} }, 6000);
-  // ensure sticky offsets recalc on resize and scroll of wrapper
-  window.addEventListener('resize', () => requestAnimationFrame(setStickyOffsets));
-  tableWrap.addEventListener('scroll', ()=> { /* no-op but ensures layout stable */ });
-  // call once
-  requestAnimationFrame(setStickyOffsets);
+  // autosave interval (light)
+  setInterval(()=> { try{ saveCurrentDate(); }catch(e){} }, 8000);
+  updateTotals();
 }
 init();
 </script>
