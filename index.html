@@ -17,7 +17,7 @@
     .qtyInput { width: 55px; }
     .priceInput { width: 55px; }
     .dueHead { min-width: 110px; }
-    .dueCol input { width: 110px; }
+    .dueCol input { width: 90px; }
     .cellStack { display:flex; flex-direction:column; gap:2px; align-items:center; }
     .cellStack span { font-size:11px; color:#666; }
     .controls { margin-bottom:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
@@ -34,7 +34,28 @@
     .masterPrices label { font-size:13px; color:#333; }
     .masterPrices input { width:72px; padding:6px; border:1px solid #ccc; border-radius:4px; }
     .no-print { }
-    @media print { .no-print { display:none !important; } body { background:#fff; padding:0; } }
+    .dueCellWrapper {
+      display:flex;
+      align-items:center;
+      gap:2px;
+      justify-content:center;
+    }
+    .clearDueBtn {
+      border:none;
+      background:#ef4444;
+      color:#fff;
+      font-size:10px;
+      padding:0 3px;
+      line-height:1;
+      border-radius:3px;
+      cursor:pointer;
+    }
+    .clearDueBtn:hover { opacity:0.85; }
+
+    @media print {
+      .no-print { display:none !important; }
+      body { background:#fff; padding:0; }
+    }
   </style>
 </head>
 <body>
@@ -311,6 +332,141 @@
     }
   }
 
+  // LIVE RECALC FOR EDIT MODE (dynamic amount & due)
+  function recalcRowPreview(i) {
+    const r = rows[i];
+    if (!r) return;
+
+    const num = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      const v = parseFloat(el.value);
+      return isNaN(v) ? 0 : v;
+    };
+
+    const price = (id, fallback) => {
+      const el = document.getElementById(id);
+      if (!el) return fallback;
+      const v = parseFloat(el.value);
+      return isNaN(v) ? fallback : v;
+    };
+
+    const tmL    = num(`tmL_${i}`);
+    const sMilkL = num(`sMilkL_${i}`);
+    const sCurdL = num(`sCurdL_${i}`);
+    const bCurdL = num(`bCurdL_${i}`);
+    const h500L  = num(`h500L_${i}`);
+    const fmL    = num(`fmL_${i}`);
+    const fm1lL  = num(`fm1lL_${i}`);
+    const sm1lL  = num(`sm1lL_${i}`);
+
+    const tmP    = price(`tmP_${i}`, MASTER.tm);
+    const sMilkP = price(`sMilkP_${i}`, MASTER.sMilk);
+    const sCurdP = price(`sCurdP_${i}`, MASTER.sCurd);
+    const bCurdP = price(`bCurdP_${i}`, MASTER.bCurd);
+    const h500P  = price(`h500P_${i}`, MASTER.h500);
+    const fmP    = price(`fmP_${i}`, MASTER.fm);
+    const fm1lP  = price(`fm1lP_${i}`, MASTER.fm1l);
+    const sm1lP  = price(`sm1lP_${i}`, MASTER.sm1l);
+
+    const totalLitres =
+      tmL + sMilkL + sCurdL + bCurdL + h500L + fmL + fm1lL + sm1lL;
+
+    const amount =
+      tmL    * tmP    +
+      sMilkL * sMilkP +
+      sCurdL * sCurdP +
+      bCurdL * bCurdP +
+      h500L  * h500P  +
+      fmL    * fmP    +
+      fm1lL  * fm1lP  +
+      sm1lL  * sm1lP;
+
+    const prevDue = parseFloat(r.prevDue) || 0;
+
+    const paidInput = document.getElementById(`paid_${i}`);
+    let paid = 0;
+    if (paidInput && paidInput.value !== "") {
+      const pv = parseFloat(paidInput.value);
+      paid = isNaN(pv) ? 0 : pv;
+    } else {
+      // if paid empty, treat as 0 (user will type)
+      paid = 0;
+    }
+
+    const due = prevDue + amount - paid;
+
+    const totLitCell = document.getElementById(`totLit_${i}`);
+    if (totLitCell) {
+      totLitCell.textContent = totalLitres.toFixed(2).replace(/\.00$/, "");
+    }
+    const totAmtCell = document.getElementById(`totAmt_${i}`);
+    if (totAmtCell) {
+      totAmtCell.textContent = "₹" + amount.toFixed(0);
+    }
+    const dueInput = document.getElementById(`due_${i}`);
+    if (dueInput) {
+      dueInput.value = "₹" + due.toFixed(0);
+    }
+  }
+
+  // CLEAR DUE BUTTON → make due = 0 by auto-filling paid = prevDue + amount
+  function clearDue(i) {
+    const r = rows[i];
+    if (!r) return;
+
+    const num = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      const v = parseFloat(el.value);
+      return isNaN(v) ? 0 : v;
+    };
+    const price = (id, fallback) => {
+      const el = document.getElementById(id);
+      if (!el) return fallback;
+      const v = parseFloat(el.value);
+      return isNaN(v) ? fallback : v;
+    };
+
+    const tmL    = num(`tmL_${i}`);
+    const sMilkL = num(`sMilkL_${i}`);
+    const sCurdL = num(`sCurdL_${i}`);
+    const bCurdL = num(`bCurdL_${i}`);
+    const h500L  = num(`h500L_${i}`);
+    const fmL    = num(`fmL_${i}`);
+    const fm1lL  = num(`fm1lL_${i}`);
+    const sm1lL  = num(`sm1lL_${i}`);
+
+    const tmP    = price(`tmP_${i}`, MASTER.tm);
+    const sMilkP = price(`sMilkP_${i}`, MASTER.sMilk);
+    const sCurdP = price(`sCurdP_${i}`, MASTER.sCurd);
+    const bCurdP = price(`bCurdP_${i}`, MASTER.bCurd);
+    const h500P  = price(`h500P_${i}`, MASTER.h500);
+    const fmP    = price(`fmP_${i}`, MASTER.fm);
+    const fm1lP  = price(`fm1lP_${i}`, MASTER.fm1l);
+    const sm1lP  = price(`sm1lP_${i}`, MASTER.sm1l);
+
+    const amount =
+      tmL    * tmP    +
+      sMilkL * sMilkP +
+      sCurdL * sCurdP +
+      bCurdL * bCurdP +
+      h500L  * h500P  +
+      fmL    * fmP    +
+      fm1lL  * fm1lP  +
+      sm1lL  * sm1lP;
+
+    const prevDue = parseFloat(r.prevDue) || 0;
+    const fullPaid = prevDue + amount;
+
+    const paidInput = document.getElementById(`paid_${i}`);
+    if (paidInput) {
+      paidInput.value = fullPaid.toFixed(0);
+    }
+
+    recalcRowPreview(i);
+  }
+
   function saveRow(i) {
     const r = rows[i];
 
@@ -456,86 +612,89 @@
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="tmL_${i}" value="${r.tmL || ''}" placeholder="L">
+              <input class="qtyInput" id="tmL_${i}" value="${r.tmL || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="tmP_${i}" value="${r.tmPrice || ''}" placeholder="₹">
+              <input class="priceInput" id="tmP_${i}" value="${r.tmPrice || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="sMilkL_${i}" value="${r.sMilkL || ''}" placeholder="L">
+              <input class="qtyInput" id="sMilkL_${i}" value="${r.sMilkL || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="sMilkP_${i}" value="${r.sMilkPrice || ''}" placeholder="₹">
+              <input class="priceInput" id="sMilkP_${i}" value="${r.sMilkPrice || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="sCurdL_${i}" value="${r.sCurdL || ''}" placeholder="L">
+              <input class="qtyInput" id="sCurdL_${i}" value="${r.sCurdL || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="sCurdP_${i}" value="${r.sCurdPrice || ''}" placeholder="₹">
+              <input class="priceInput" id="sCurdP_${i}" value="${r.sCurdPrice || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="bCurdL_${i}" value="${r.bCurdL || ''}" placeholder="L">
+              <input class="qtyInput" id="bCurdL_${i}" value="${r.bCurdL || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="bCurdP_${i}" value="${r.bCurdPrice || ''}" placeholder="₹">
+              <input class="priceInput" id="bCurdP_${i}" value="${r.bCurdPrice || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="h500L_${i}" value="${r.h500L || ''}" placeholder="L">
+              <input class="qtyInput" id="h500L_${i}" value="${r.h500L || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="h500P_${i}" value="${r.h500Price || ''}" placeholder="₹">
+              <input class="priceInput" id="h500P_${i}" value="${r.h500Price || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="fmL_${i}" value="${r.fmL || ''}" placeholder="L">
+              <input class="qtyInput" id="fmL_${i}" value="${r.fmL || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="fmP_${i}" value="${r.fmPrice || ''}" placeholder="₹">
+              <input class="priceInput" id="fmP_${i}" value="${r.fmPrice || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="fm1lL_${i}" value="${r.fm1lL || ''}" placeholder="L">
+              <input class="qtyInput" id="fm1lL_${i}" value="${r.fm1lL || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="fm1lP_${i}" value="${r.fm1lPrice || ''}" placeholder="₹">
+              <input class="priceInput" id="fm1lP_${i}" value="${r.fm1lPrice || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
           <td>
             <div class="cellStack">
-              <input class="qtyInput" id="sm1lL_${i}" value="${r.sm1lL || ''}" placeholder="L">
+              <input class="qtyInput" id="sm1lL_${i}" value="${r.sm1lL || ''}" placeholder="L" oninput="recalcRowPreview(${i})">
               <span>L</span>
-              <input class="priceInput" id="sm1lP_${i}" value="${r.sm1lPrice || ''}" placeholder="₹">
+              <input class="priceInput" id="sm1lP_${i}" value="${r.sm1lPrice || ''}" placeholder="₹" oninput="recalcRowPreview(${i})">
               <span>₹/L</span>
             </div>
           </td>
 
-          <td>${totals.totalLitres}</td>
-          <td>₹${totals.amount.toFixed(0)}</td>
+          <td id="totLit_${i}">${totals.totalLitres}</td>
+          <td id="totAmt_${i}">₹${totals.amount.toFixed(0)}</td>
 
           <td>
-            <input id="paid_${i}" value="${r.paid || ''}" placeholder="Paid ₹">
+            <input id="paid_${i}" value="${r.paid || ''}" placeholder="Paid ₹" oninput="recalcRowPreview(${i})">
             <div style="font-size:11px;color:#666;">(Edit Paid)</div>
           </td>
 
           <td class="dueCol">
-            <input id="due_${i}" value="₹${totals.due.toFixed(0)}" readonly>
+            <div class="dueCellWrapper">
+              <input id="due_${i}" value="₹${totals.due.toFixed(0)}" readonly>
+              <button class="clearDueBtn" type="button" title="Clear Due" onclick="clearDue(${i})">&times;</button>
+            </div>
             <div style="font-size:11px;color:#666;">Prev: ₹${totals.prevDue.toFixed(0)}</div>
           </td>
 
